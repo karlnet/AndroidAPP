@@ -10,28 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.xutils.HttpManager;
-import org.xutils.common.Callback.CancelledException;
 import org.xutils.common.Callback.CommonCallback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -60,35 +51,35 @@ public class DevicesActivity extends AppCompatActivity {
 
     private void updateListView(Message paramMessage) {
         GHCB localGHCB = (GHCB) paramMessage.obj;
-        int i = paramMessage.arg1;
-        int j = this.lv.getFirstVisiblePosition();
-        int k = this.lv.getLastVisiblePosition();
-        int m = localGHCB.getListViewindex();
-        ViewHolder localViewHolder;
-        if ((m <= k) && (m >= j)) {
-            localViewHolder = (ViewHolder) this.lv.getChildAt(m - j).getTag();
-            switch (i) {
+        int itemID = paramMessage.arg1;
+        int start = this.lv.getFirstVisiblePosition();
+        int last = this.lv.getLastVisiblePosition();
+        int current = localGHCB.getListViewindex();
+        ViewHolder viewHolder;
+        if ((current <= last) && (current >= start)) {
+            viewHolder = (ViewHolder) this.lv.getChildAt(current - start).getTag();
+            switch (itemID) {
+                case GHCBAPP.TEMPERATURE_CHANGED:
+                    viewHolder.DeviceTemperature.setText(localGHCB.getTemperature());
+                    break;
+                case GHCBAPP.HUMIDITY_CHANGED:
+                    viewHolder.DeviceHumidity.setText(localGHCB.getHumidity());
+                    break;
+                case GHCBAPP.LAMP_CHANGED:
+                    viewHolder.DeviceLamp.setText(MyUtil.togglgText(localGHCB.isLamp()));
+                    break;
+                case GHCBAPP.PUMP_CHANGED:
+                    viewHolder.DevicePump.setText(MyUtil.togglgText(localGHCB.isPump()));
+                    break;
+                case GHCBAPP.ALL_CHANGED:
+                    if (this.myAdapter == null) {
+                        this.myAdapter.notifyDataSetChanged();
+                    }
+                    break;
                 default:
-                case 2:
-                case 1:
-                case 3:
-                case 4:
-                case 5:
+                    break;
             }
         }
-        do {
-            return;
-            localViewHolder.DeviceHumidity.setText(localGHCB.getHumidity());
-            return;
-            localViewHolder.DeviceTemperature.setText(localGHCB.getTemperature());
-            return;
-            localViewHolder.DeviceLamp.setText(MyUtil.togglgText(localGHCB.isLamp()));
-            return;
-            localViewHolder.DevicePump.setText(MyUtil.togglgText(localGHCB.isPump()));
-            return;
-        }
-        while (this.myAdapter == null);
-        this.myAdapter.notifyDataSetChanged();
     }
 
     protected void onCreate(Bundle paramBundle) {
@@ -118,19 +109,16 @@ public class DevicesActivity extends AppCompatActivity {
 
     protected void onPause() {
         super.onPause();
-        Iterator localIterator = GHCBManage.GHCBs.values().iterator();
-        while (localIterator.hasNext()) {
-            GHCB localGHCB = (GHCB) localIterator.next();
+        for (GHCB localGHCB : GHCBManage.GHCBs.values()) {
             if (localGHCB.getStatus() == GHCB.GHCBStatus.online)
                 localGHCB.setHandler(null);
         }
+
     }
 
     protected void onResume() {
         super.onResume();
-        Iterator localIterator = GHCBManage.GHCBs.values().iterator();
-        while (localIterator.hasNext()) {
-            GHCB localGHCB = (GHCB) localIterator.next();
+        for (GHCB localGHCB : GHCBManage.GHCBs.values()) {
             if (localGHCB.getStatus() == GHCB.GHCBStatus.online)
                 localGHCB.setHandler(this.handler);
         }
@@ -155,8 +143,7 @@ public class DevicesActivity extends AppCompatActivity {
 
             public void onSuccess(String paramAnonymousString) {
                 JsonArray localJsonArray = (JsonArray) new JsonParser().parse(paramAnonymousString);
-                int i = 0;
-                if (i < localJsonArray.size()) {
+                for (int i = 0; i < localJsonArray.size(); i++) {
                     JsonObject localJsonObject = (JsonObject) localJsonArray.get(i);
                     GHCB localGHCB = new GHCB();
                     localGHCB.setOwner(APPUser.userName);
@@ -169,15 +156,12 @@ public class DevicesActivity extends AppCompatActivity {
                     if (localJsonObject.get("online").getAsString().equals("1")) {
                         localGHCB.setStatus(GHCB.GHCBStatus.online);
                         localGHCB.setHandler(DevicesActivity.this.handler);
-                    }
-                    while (true) {
-                        DevicesActivity.this.mGHCBManage.addGHCB(localGHCB);
-                        i++;
-                        break;
+                    } else {
                         localGHCB.setStatus(GHCB.GHCBStatus.offline);
                     }
+                    DevicesActivity.this.mGHCBManage.addGHCB(localGHCB);
                 }
-                DevicesActivity.this.myAdapter = new DevicesActivity.MyAdapter(DevicesActivity.this, DevicesActivity.this);
+                DevicesActivity.this.myAdapter = new DevicesActivity.MyAdapter(DevicesActivity.this);
                 DevicesActivity.this.lv.setAdapter(DevicesActivity.this.myAdapter);
             }
         });
@@ -186,10 +170,9 @@ public class DevicesActivity extends AppCompatActivity {
     protected class MyAdapter extends BaseAdapter {
         private Context context;
 
-        public MyAdapter(Context arg2) {
-            Object localObject;
-            this.context = localObject;
-            DevicesActivity.this.mGHCBList = ((GHCB[]) GHCBManage.GHCBs.values().toArray(new GHCB[0]));
+        public MyAdapter(Context ctx) {
+            this.context = ctx;
+            DevicesActivity.this.mGHCBList = (GHCB[]) GHCBManage.GHCBs.values().toArray();
         }
 
         public int getCount() {
@@ -206,27 +189,29 @@ public class DevicesActivity extends AppCompatActivity {
 
         public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
             DevicesActivity.this.mGHCBList[paramInt].setListViewindex(paramInt);
-            DevicesActivity.ViewHolder localViewHolder;
+            DevicesActivity.ViewHolder viewHolder;
             if (paramView == null) {
-                paramView = ((LayoutInflater) this.context.getSystemService("layout_inflater")).inflate(2130968617, null);
-                localViewHolder = new DevicesActivity.ViewHolder(DevicesActivity.this, null);
-                localViewHolder.DeviceLinerLayout = ((LinearLayout) paramView.findViewById(2131493014));
-                localViewHolder.DeviceDescription = ((TextView) paramView.findViewById(2131493016));
-                localViewHolder.DeviceHumidity = ((TextView) paramView.findViewById(2131493018));
-                localViewHolder.DeviceTemperature = ((TextView) paramView.findViewById(2131493017));
-                localViewHolder.DevicePump = ((TextView) paramView.findViewById(2131493020));
-                localViewHolder.DeviceLamp = ((TextView) paramView.findViewById(2131493019));
-                paramView.setTag(localViewHolder);
+
+                paramView = ((LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.devices, null);
+                viewHolder = new DevicesActivity.ViewHolder();
+                viewHolder.GHCBIndex = paramInt;
+                viewHolder.DeviceLinerLayout = ((LinearLayout) paramView.findViewById(R.id.devicesLinerLayout));
+                viewHolder.DeviceDescription = ((TextView) paramView.findViewById(R.id.deviceDescription));
+                viewHolder.DeviceHumidity = ((TextView) paramView.findViewById(R.id.deviceHumidity));
+                viewHolder.DeviceTemperature = ((TextView) paramView.findViewById(R.id.deviceTemperature));
+                viewHolder.DevicePump = ((TextView) paramView.findViewById(R.id.devicePump));
+                viewHolder.DeviceLamp = ((TextView) paramView.findViewById(R.id.deviceLamp));
+                paramView.setTag(viewHolder);
+            } else {
+                viewHolder = (DevicesActivity.ViewHolder) paramView.getTag();
+                viewHolder.DeviceDescription.setText("大棚：" + DevicesActivity.this.mGHCBList[paramInt].getMAC());
+                viewHolder.DeviceTemperature.setText(DevicesActivity.this.mGHCBList[paramInt].getTemperature());
+                viewHolder.DeviceHumidity.setText(DevicesActivity.this.mGHCBList[paramInt].getHumidity());
+                viewHolder.DevicePump.setText(MyUtil.togglgText(DevicesActivity.this.mGHCBList[paramInt].isPump()));
+                viewHolder.DeviceLamp.setText(MyUtil.togglgText(DevicesActivity.this.mGHCBList[paramInt].isLamp()));
             }
-            while (true) {
-                localViewHolder.DeviceDescription.setText("大棚：" + DevicesActivity.this.mGHCBList[paramInt].getMAC());
-                localViewHolder.DeviceTemperature.setText(DevicesActivity.this.mGHCBList[paramInt].getTemperature());
-                localViewHolder.DeviceHumidity.setText(DevicesActivity.this.mGHCBList[paramInt].getHumidity());
-                localViewHolder.DevicePump.setText(MyUtil.togglgText(DevicesActivity.this.mGHCBList[paramInt].isPump()));
-                localViewHolder.DeviceLamp.setText(MyUtil.togglgText(DevicesActivity.this.mGHCBList[paramInt].isLamp()));
-                return paramView;
-                localViewHolder = (DevicesActivity.ViewHolder) paramView.getTag();
-            }
+
+            return paramView;
         }
     }
 
@@ -237,6 +222,7 @@ public class DevicesActivity extends AppCompatActivity {
         public LinearLayout DeviceLinerLayout;
         public TextView DevicePump;
         public TextView DeviceTemperature;
+        public int GHCBIndex;
 
         private ViewHolder() {
         }

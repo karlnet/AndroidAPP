@@ -2,7 +2,7 @@ package com.hhnext.myeasylink;
 
 import android.app.Application;
 
-import org.xutils.x.Ext;
+import org.xutils.x;
 
 public class GHCBAPP extends Application {
     public static final int ALL_CHANGED = 5;

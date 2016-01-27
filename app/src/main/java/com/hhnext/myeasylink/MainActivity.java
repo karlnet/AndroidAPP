@@ -2,7 +2,6 @@ package com.hhnext.myeasylink;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,15 +20,9 @@ import com.mxchip.jmdns.JmdnsAPI;
 import com.mxchip.jmdns.JmdnsListener;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-import org.xutils.HttpManager;
-import org.xutils.common.Callback;
-import org.xutils.common.Callback.CancelledException;
 import org.xutils.common.Callback.CommonCallback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
-
-import static org.xutils.common.Callback.*;
 
 public class MainActivity extends AppCompatActivity {
     private static boolean first = true;
@@ -169,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         String str = this.mEasylinkAPI.getSSID();
-        if ((str != null) && (str != "") && (!str.contains("unknown"))) {
+        if ((str != null) && (str.equals("")) && (!str.contains("unknown"))) {
             this.ssid.setText(str);
             this.password.setText("iloveyou");
             return;

@@ -1,6 +1,7 @@
 package com.hhnext.myeasylink;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,22 +29,22 @@ public class UserRegisterActivity extends AppCompatActivity {
     private TextView smsCode;
 
     private void initComponent() {
-        this.msgText = ((TextView) findViewById(2131492995));
-        this.msgText.setVisibility(8);
-        this.smsCode = ((TextView) findViewById(2131493002));
+        this.msgText = ((TextView) findViewById(R.id.msgTextR));
+        this.msgText.setVisibility(View.GONE);
+        this.smsCode = ((TextView) findViewById(R.id.verificationNumber));
         this.smsCode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                UserRegisterActivity.this.msgText.setVisibility(8);
+                UserRegisterActivity.this.msgText.setVisibility(View.GONE);
             }
         });
-        this.mobileNumber = ((TextView) findViewById(2131492998));
+        this.mobileNumber = ((TextView) findViewById(R.id.mobileNumberRegister));
         this.mobileNumber.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                UserRegisterActivity.this.msgText.setVisibility(8);
+                UserRegisterActivity.this.msgText.setVisibility(View.GONE);
             }
         });
-        this.password = ((TextView) findViewById(2131493005));
-        this.smsButton = ((Button) findViewById(2131493000));
+        this.password = ((TextView) findViewById(R.id.newPassword));
+        this.smsButton = ((Button) findViewById(R.id.smsButton));
         this.smsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 RequestParams localRequestParams = new RequestParams("http://easylink.io/v2/users");
@@ -52,15 +53,15 @@ public class UserRegisterActivity extends AppCompatActivity {
                 String str = "{\"username\":\"" + UserRegisterActivity.this.mobileNumber.getText().toString() + "\"}";
                 Log.i("orinoco", "username= " + str);
                 localRequestParams.setBodyContent(str);
-                x.http().post(localRequestParams, new Callback.CommonCallback() {
-                    public void onCancelled(Callback.CancelledException paramAnonymous2CancelledException) {
+                x.http().post(localRequestParams, new CommonCallback<String>() {
+                    public void onCancelled(CancelledException paramAnonymous2CancelledException) {
                     }
 
                     public void onError(Throwable paramAnonymous2Throwable, boolean paramAnonymous2Boolean) {
                         Log.i("orinoco", "login reponse:" + paramAnonymous2Throwable.toString());
                         UserRegisterActivity.this.msgText.setText("短信服务器错误，请重新输入手机号码：");
-                        UserRegisterActivity.this.msgText.setTextColor(-65536);
-                        UserRegisterActivity.this.msgText.setVisibility(0);
+                        UserRegisterActivity.this.msgText.setTextColor(Color.RED);
+                        UserRegisterActivity.this.msgText.setVisibility(View.VISIBLE);
                     }
 
                     public void onFinished() {
@@ -73,7 +74,7 @@ public class UserRegisterActivity extends AppCompatActivity {
                 });
             }
         });
-        this.loginButton = ((Button) findViewById(2131493006));
+        this.loginButton = ((Button) findViewById(R.id.RegisterButton));
         this.loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 RequestParams localRequestParams = new RequestParams("http://easylink.io/v2/users");
@@ -82,15 +83,15 @@ public class UserRegisterActivity extends AppCompatActivity {
                 String str = "{\"username\":\"" + UserRegisterActivity.this.mobileNumber.getText().toString() + "\"," + "\"verification_code\":\"" + UserRegisterActivity.this.smsCode.getText().toString() + "\"," + "\"password\":\"" + UserRegisterActivity.this.password.getText().toString() + "\"}";
                 Log.i("orinoco", "s= " + str);
                 localRequestParams.setBodyContent(str);
-                x.http().post(localRequestParams, new Callback.CommonCallback() {
-                    public void onCancelled(Callback.CancelledException paramAnonymous2CancelledException) {
+                x.http().post(localRequestParams, new CommonCallback<String>() {
+                    public void onCancelled(CancelledException paramAnonymous2CancelledException) {
                     }
 
                     public void onError(Throwable paramAnonymous2Throwable, boolean paramAnonymous2Boolean) {
                         Log.i("orinoco", "login reponse:" + paramAnonymous2Throwable.toString());
                         UserRegisterActivity.this.msgText.setText("验证码错误，请重新输入：");
-                        UserRegisterActivity.this.msgText.setTextColor(-65536);
-                        UserRegisterActivity.this.msgText.setVisibility(0);
+                        UserRegisterActivity.this.msgText.setTextColor(Color.RED);
+                        UserRegisterActivity.this.msgText.setVisibility(View.VISIBLE);
                     }
 
                     public void onFinished() {
@@ -109,7 +110,7 @@ public class UserRegisterActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        setContentView(2130968605);
+        setContentView(R.layout.activity_register);
         initComponent();
     }
 }
