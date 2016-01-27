@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -8,94 +7,94 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-  <TextView
-      android:id="@+id/textView00"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginTop="20.0dip"
-      android:text="请输入手机号和密码："
-      android:textSize="16.0dip" />
+    <TextView
+        android:id="@+id/textView00"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20.0dip"
+        android:text="请输入手机号和密码："
+        android:textSize="16.0dip" />
 
-  <TextView
-      android:id="@+id/textView01"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_below="@id/textView00"
-      android:layout_marginTop="30.0dip"
-      android:text="手机号："
-      android:textSize="16.0dip" />
+    <TextView
+        android:id="@+id/textView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/textView00"
+        android:layout_marginTop="30.0dip"
+        android:text="手机号："
+        android:textSize="16.0dip" />
 
-  <EditText
-      android:id="@+id/mobileNumber"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignBaseline="@id/textView01"
-      android:layout_toRightOf="@id/textView01"
-      android:text="13701308059@vip.163.com"
-      android:textSize="16.0dip" />
+    <EditText
+        android:id="@+id/mobileNumber"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textView01"
+        android:layout_toRightOf="@id/textView01"
+        android:text="13701308059@vip.163.com"
+        android:textSize="16.0dip" />
 
-  <TextView
-      android:id="@+id/textView02"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignRight="@id/textView01"
-      android:layout_below="@id/textView01"
-      android:layout_marginTop="20.0dip"
-      android:gravity="right"
-      android:text="密码："
-      android:textSize="16.0dip" />
+    <TextView
+        android:id="@+id/textView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@id/textView01"
+        android:layout_below="@id/textView01"
+        android:layout_marginTop="20.0dip"
+        android:gravity="right"
+        android:text="密码："
+        android:textSize="16.0dip" />
 
-  <EditText
-      android:id="@+id/password"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignBaseline="@id/textView02"
-      android:layout_below="@id/mobileNumber"
-      android:layout_toRightOf="@id/textView02"
-      android:ems="10"
-      android:inputType="textPassword"
-      android:text="\ 123456"
-      android:textSize="16.0dip" />
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textView02"
+        android:layout_below="@id/mobileNumber"
+        android:layout_toRightOf="@id/textView02"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text="\ 123456"
+        android:textSize="16.0dip" />
 
-  <Button
-      android:id="@+id/loginButton"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_below="@id/textView02"
-      android:layout_marginTop="20.0dip"
-      android:text="登录"
-      android:textSize="20.0dip" />
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/textView02"
+        android:layout_marginTop="20.0dip"
+        android:text="登录"
+        android:textSize="20.0dip" />
 
-  <Button
-      android:id="@+id/registerUser"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignLeft="@id/textView02"
-      android:layout_below="@id/loginButton"
-      android:layout_marginTop="30.0dip"
-      android:text="新用户注册/忘记密码" />
+    <Button
+        android:id="@+id/registerUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/textView02"
+        android:layout_below="@id/loginButton"
+        android:layout_marginTop="30.0dip"
+        android:text="新用户注册/忘记密码" />
 
-  <Button
-      android:id="@+id/button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_alignRight="@id/mobileNumber"
-      android:layout_below="@id/registerUser"
-      android:layout_marginTop="44.0dip"
-      android:text="New Button" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@id/mobileNumber"
+        android:layout_below="@id/registerUser"
+        android:layout_marginTop="44.0dip"
+        android:text="New Button" />
 
-  <TextView
-      android:id="@+id/registerUserLink"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignRight="@id/mobileNumber"
-      android:layout_alignTop="@id/registerUser"
-      android:text="Medium Text"
-      android:textAppearance="?android:textAppearanceMedium" />
+    <TextView
+        android:id="@+id/registerUserLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/mobileNumber"
+        android:layout_alignTop="@id/registerUser"
+        android:text="Medium Text"
+        android:textAppearance="?android:textAppearanceMedium" />
 </RelativeLayout>

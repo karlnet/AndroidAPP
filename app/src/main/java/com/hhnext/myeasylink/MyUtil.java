@@ -12,16 +12,13 @@ import java.util.Calendar;
 import org.json.JSONObject;
 import org.xutils.http.RequestParams;
 
-public class MyUtil
-{
+public class MyUtil {
     private static String appSecretKey;
 
-    private static String HexEncode(byte[] paramArrayOfByte)
-    {
+    private static String HexEncode(byte[] paramArrayOfByte) {
         StringBuilder localStringBuilder = new StringBuilder(2 * paramArrayOfByte.length);
         int i = paramArrayOfByte.length;
-        for (int j = 0; j < i; j++)
-        {
+        for (int j = 0; j < i; j++) {
             int k = paramArrayOfByte[j];
             localStringBuilder.append(Integer.toHexString((k & 0xF0) >>> 4));
             localStringBuilder.append(Integer.toHexString(k & 0xF));
@@ -29,63 +26,54 @@ public class MyUtil
         return localStringBuilder.toString();
     }
 
-    public static String MD5Encode(String paramString)
-    {
-        try
-        {
+    public static String MD5Encode(String paramString) {
+        try {
             byte[] arrayOfByte = paramString.getBytes();
             MessageDigest localMessageDigest = MessageDigest.getInstance("MD5");
             localMessageDigest.reset();
             localMessageDigest.update(arrayOfByte);
             String str = HexEncode(localMessageDigest.digest());
             return str;
-        }
-        catch (NoSuchAlgorithmException localNoSuchAlgorithmException)
-        {
+        } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
             localNoSuchAlgorithmException.printStackTrace();
         }
         return "";
     }
 
-    public static String getCurrentTimeStamp()
-    {
-        try
-        {
+    public static String getCurrentTimeStamp() {
+        try {
             String str = String.valueOf(new Timestamp(Calendar.getInstance().getTime().getTime()).getTime() / 1000L);
             return str;
-        }
-        catch (Exception localException)
-        {
+        } catch (Exception localException) {
             localException.printStackTrace();
         }
         return null;
     }
 
-    public static void setRequestParamsHeader(RequestParams paramRequestParams)
-    {
+    public static void setRequestParamsHeader(RequestParams paramRequestParams) {
         paramRequestParams.addHeader("content-type", "application/json");
         paramRequestParams.addHeader("X-Application-Id", "6a3d6800-1b07-4fc5-86ca-12bba8f8dc67");
         paramRequestParams.addHeader("X-Request-Sign", APPUser.getRequestSign());
         paramRequestParams.addHeader("Authorization", APPUser.getRequestAuthorization());
     }
 
-    public static String togglgText(boolean paramBoolean)
-    {
+    public static String togglgText(boolean paramBoolean) {
         if (paramBoolean)
             return "开";
         return "关";
     }
 
-    public String getAppSecretKey()
-    {
+    public String getAppSecretKey() {
         return appSecretKey;
     }
 
-    protected void httpMsgToBoard(JSONObject paramJSONObject, String paramString)
-    {
-        try
-        {
-            HttpURLConnection localHttpURLConnection = (HttpURLConnection)new URL(paramString).openConnection();
+    public void setAppSecretKey(String paramString) {
+        appSecretKey = paramString;
+    }
+
+    protected void httpMsgToBoard(JSONObject paramJSONObject, String paramString) {
+        try {
+            HttpURLConnection localHttpURLConnection = (HttpURLConnection) new URL(paramString).openConnection();
             localHttpURLConnection.setDoOutput(true);
             localHttpURLConnection.setDoInput(true);
             localHttpURLConnection.setUseCaches(false);
@@ -100,14 +88,7 @@ public class MyUtil
             localObjectOutputStream.close();
             new ObjectInputStream(localHttpURLConnection.getInputStream());
             return;
+        } catch (Exception localException) {
         }
-        catch (Exception localException)
-        {
-        }
-    }
-
-    public void setAppSecretKey(String paramString)
-    {
-        appSecretKey = paramString;
     }
 }

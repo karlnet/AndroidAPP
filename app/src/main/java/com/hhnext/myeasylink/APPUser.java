@@ -3,8 +3,7 @@ package com.hhnext.myeasylink;
 import java.io.Serializable;
 
 public class APPUser
-        implements Serializable
-{
+        implements Serializable {
     public static final String APPID = "6a3d6800-1b07-4fc5-86ca-12bba8f8dc67";
     public static final String APPSecretKey = "7c734a44ed8450aff7f8fb7f958e7d90";
     public static final String loginURL = "http://easylink.io/v2/users/login";
@@ -17,13 +16,11 @@ public class APPUser
     public static String userSMSToken;
     public static String userToken = "d250cabf-9339-4abe-9fc5-c53932734edf";
 
-    public static String getRequestAuthorization()
-    {
+    public static String getRequestAuthorization() {
         return "token " + userToken;
     }
 
-    public static String getRequestSign()
-    {
+    public static String getRequestSign() {
         String str = MyUtil.getCurrentTimeStamp();
         return MyUtil.MD5Encode(new StringBuilder().append("7c734a44ed8450aff7f8fb7f958e7d90").append(str).toString()) + ", " + str;
     }

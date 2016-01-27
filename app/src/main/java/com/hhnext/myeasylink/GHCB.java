@@ -58,28 +58,59 @@ public class GHCB {
         return this.createTime;
     }
 
+    public void setCreateTime(String paramString) {
+        this.createTime = paramString;
+    }
+
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(String paramString) {
+        this.description = paramString;
     }
 
     public String getDevID() {
         return this.devID;
     }
 
+    public void setDevID(String paramString) {
+        this.devID = paramString;
+    }
+
     public String getDevToken() {
         return this.devToken;
+    }
+
+    public void setDevToken(String paramString) {
+        this.devToken = paramString;
     }
 
     public Handler getHandler() {
         return this.handler;
     }
 
+    public void setHandler(Handler paramHandler) {
+        this.handler = paramHandler;
+    }
+
     public String getHumidity() {
         return this.humidity;
     }
 
+    public void setHumidity(String paramString) {
+        if (this.humidity != paramString) {
+            this.humidity = paramString;
+            sendMsgToWindows(2);
+        }
+    }
+
     public String getIPAddress() {
         return this.IPAddress;
+    }
+
+    public void setIPAddress(String paramString) {
+        this.IPAddress = paramString;
     }
 
     public String getInTopic() {
@@ -90,20 +121,40 @@ public class GHCB {
         return this.ListViewindex;
     }
 
+    public void setListViewindex(int paramInt) {
+        this.ListViewindex = paramInt;
+    }
+
     public String getMAC() {
         return this.MAC;
+    }
+
+    public void setMAC(String paramString) {
+        this.MAC = paramString;
     }
 
     public MqttServiceAPI getMapi() {
         return this.mapi;
     }
 
+    public void setMapi(MqttServiceAPI paramMqttServiceAPI) {
+        this.mapi = paramMqttServiceAPI;
+    }
+
     public String getOfflineTime() {
         return this.offlineTime;
     }
 
+    public void setOfflineTime(String paramString) {
+        this.offlineTime = paramString;
+    }
+
     public String getOnlineTime() {
         return this.onlineTime;
+    }
+
+    public void setOnlineTime(String paramString) {
+        this.onlineTime = paramString;
     }
 
     public String getOutTopic() {
@@ -114,36 +165,90 @@ public class GHCB {
         return this.owner;
     }
 
+    public void setOwner(String paramString) {
+        this.owner = paramString;
+    }
+
     public String getPublicIPAddress() {
         return this.publicIPAddress;
+    }
+
+    public void setPublicIPAddress(String paramString) {
+        this.publicIPAddress = paramString;
     }
 
     public String getROMVersion() {
         return this.ROMVersion;
     }
 
+    public void setROMVersion(String paramString) {
+        this.ROMVersion = paramString;
+    }
+
     public String getSerialNo() {
         return this.serialNo;
+    }
+
+    public void setSerialNo(String paramString) {
+        this.serialNo = paramString;
     }
 
     public String getSsid() {
         return this.ssid;
     }
 
+    public void setSsid(String paramString) {
+        this.ssid = paramString;
+    }
+
     public GHCBStatus getStatus() {
         return this.status;
+    }
+
+    public void setStatus(GHCBStatus paramGHCBStatus) {
+        ConnManage localConnManage;
+        if (this.status != paramGHCBStatus) {
+            this.status = paramGHCBStatus;
+            localConnManage = GHCBManage.connManage;
+            if (paramGHCBStatus == GHCBStatus.online)
+                localConnManage.startNewConnToGHCB(this);
+        } else {
+            return;
+        }
+        localConnManage.stopConnToGHCB(this);
     }
 
     public String getTemperature() {
         return this.temperature;
     }
 
+    public void setTemperature(String paramString) {
+        if (this.temperature != paramString) {
+            this.temperature = paramString;
+            sendMsgToWindows(1);
+        }
+    }
+
     public boolean isLamp() {
         return this.lamp;
     }
 
+    public void setLamp(boolean paramBoolean) {
+        if (this.lamp != paramBoolean) {
+            this.lamp = paramBoolean;
+            sendMsgToWindows(3);
+        }
+    }
+
     public boolean isPump() {
         return this.pump;
+    }
+
+    public void setPump(boolean paramBoolean) {
+        if (this.pump != paramBoolean) {
+            this.pump = paramBoolean;
+            sendMsgToWindows(4);
+        }
     }
 
     public void lampOFF() {
@@ -162,111 +267,6 @@ public class GHCB {
         PublishCommand("{\"motor_switch\":true}");
     }
 
-    public void setCreateTime(String paramString) {
-        this.createTime = paramString;
-    }
-
-    public void setDescription(String paramString) {
-        this.description = paramString;
-    }
-
-    public void setDevID(String paramString) {
-        this.devID = paramString;
-    }
-
-    public void setDevToken(String paramString) {
-        this.devToken = paramString;
-    }
-
-    public void setHandler(Handler paramHandler) {
-        this.handler = paramHandler;
-    }
-
-    public void setHumidity(String paramString) {
-        if (this.humidity != paramString) {
-            this.humidity = paramString;
-            sendMsgToWindows(2);
-        }
-    }
-
-    public void setIPAddress(String paramString) {
-        this.IPAddress = paramString;
-    }
-
-    public void setLamp(boolean paramBoolean) {
-        if (this.lamp != paramBoolean) {
-            this.lamp = paramBoolean;
-            sendMsgToWindows(3);
-        }
-    }
-
-    public void setListViewindex(int paramInt) {
-        this.ListViewindex = paramInt;
-    }
-
-    public void setMAC(String paramString) {
-        this.MAC = paramString;
-    }
-
-    public void setMapi(MqttServiceAPI paramMqttServiceAPI) {
-        this.mapi = paramMqttServiceAPI;
-    }
-
-    public void setOfflineTime(String paramString) {
-        this.offlineTime = paramString;
-    }
-
-    public void setOnlineTime(String paramString) {
-        this.onlineTime = paramString;
-    }
-
-    public void setOwner(String paramString) {
-        this.owner = paramString;
-    }
-
-    public void setPublicIPAddress(String paramString) {
-        this.publicIPAddress = paramString;
-    }
-
-    public void setPump(boolean paramBoolean) {
-        if (this.pump != paramBoolean) {
-            this.pump = paramBoolean;
-            sendMsgToWindows(4);
-        }
-    }
-
-    public void setROMVersion(String paramString) {
-        this.ROMVersion = paramString;
-    }
-
-    public void setSerialNo(String paramString) {
-        this.serialNo = paramString;
-    }
-
-    public void setSsid(String paramString) {
-        this.ssid = paramString;
-    }
-
-    public void setStatus(GHCBStatus paramGHCBStatus) {
-        ConnManage localConnManage;
-        if (this.status != paramGHCBStatus) {
-            this.status = paramGHCBStatus;
-            localConnManage = GHCBManage.connManage;
-            if (paramGHCBStatus == GHCBStatus.online)
-                localConnManage.startNewConnToGHCB(this);
-        } else {
-            return;
-        }
-        localConnManage.stopConnToGHCB(this);
-    }
-
-    public void setTemperature(String paramString) {
-        if (this.temperature != paramString) {
-            this.temperature = paramString;
-            sendMsgToWindows(1);
-        }
-    }
-
-    public static enum GHCBStatus {online,offline, activated, unactivated}
+    public static enum GHCBStatus {online, offline, activated, unactivated}
 
 }
