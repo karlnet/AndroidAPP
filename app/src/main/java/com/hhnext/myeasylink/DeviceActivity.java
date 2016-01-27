@@ -27,12 +27,13 @@ public class DeviceActivity extends AppCompatActivity {
     protected myHandler handler;
     protected GHCB mGHCB;
 
-    private ImageView cameraImage;
+
     private TextView temperature, humidity, lamp, pump;
+    private ImageView cameraImage;
+    private ImageButton cameraButton;
+    private ToggleButton toggleLamp, togglepump;
     private ListView listView;
     private SpeechListAdapter speechListAdapter;
-    private ImageButton startCameraButton;
-    private ToggleButton toggleLamp, togglepump;
 
 
     private void initComponent() {
@@ -42,8 +43,8 @@ public class DeviceActivity extends AppCompatActivity {
         this.lamp = ((TextView) findViewById(R.id.lamp));
         this.pump = ((TextView) findViewById(R.id.pump));
         this.cameraImage = ((ImageView) findViewById(R.id.cameraImage));
-        this.startCameraButton = ((ImageButton) findViewById(R.id.cameraButton));
-        this.startCameraButton.setOnClickListener(new View.OnClickListener() {
+        this.cameraButton = ((ImageButton) findViewById(R.id.cameraButton));
+        this.cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 ImageOptions localImageOptions = new ImageOptions.Builder().setSize(640, 480).setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
                 x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com1.z0.glb.clouddn.com/car.jpg", localImageOptions);
@@ -87,15 +88,16 @@ public class DeviceActivity extends AppCompatActivity {
         this.lamp.setText(MyUtil.togglgText(this.mGHCB.isLamp()));
         this.pump.setText(MyUtil.togglgText(this.mGHCB.isPump()));
 
-        this.toggleLamp.setChecked(mGHCB.isLamp());
-        this.togglepump.setChecked(mGHCB.isPump());
+        this.toggleLamp.setChecked(!mGHCB.isLamp());
+        this.togglepump.setChecked(!mGHCB.isPump());
 
         if (this.speechListAdapter != null)
             this.speechListAdapter.notifyDataSetChanged();
     }
 
     private void updateView(Message msg) {
-        switch (msg.arg1) {
+        int msgID = msg.arg1;
+        switch (msgID) {
             case GHCBAPP.HUMIDITY_CHANGED:
                 this.humidity.setText(this.mGHCB.getHumidity());
                 return;
@@ -118,7 +120,7 @@ public class DeviceActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        setContentView(R.layout.activity_devices);
+        setContentView(R.layout.activity_device);
         initComponent();
         this.mGHCB = GHCBManage.GHCBs.get(getIntent().getStringExtra("com.hhnext.myeasylink.DevID"));
         this.speechListAdapter = new SpeechListAdapter(this);
@@ -156,7 +158,7 @@ public class DeviceActivity extends AppCompatActivity {
 
         public SpeechListAdapter(Context ctx) {
             this.mContext = ctx;
-            this.mDialogue[0] = ("设备MAC:" + DeviceActivity.this.mGHCB.getMAC() + "\r\n设备编号:" + DeviceActivity.this.mGHCB.getDevID() + "\r\n设备创建时间:" + DeviceActivity.this.mGHCB.getCreateTime() + "\r\n设备离线时间:" + DeviceActivity.this.mGHCB.getOfflineTime() + "\r\n设备上线时间:" + DeviceActivity.this.mGHCB.getOnlineTime());
+            this.mDialogue[0] = ("设备MAC: " + DeviceActivity.this.mGHCB.getMAC() + "\r\n设备编号: " + DeviceActivity.this.mGHCB.getDevID() + "\r\n设备创建时间: " + DeviceActivity.this.mGHCB.getCreateTime() + "\r\n设备离线时间: " + DeviceActivity.this.mGHCB.getOfflineTime() + "\r\n设备上线时间: " + DeviceActivity.this.mGHCB.getOnlineTime());
         }
 
         public int getCount() {
@@ -204,7 +206,7 @@ public class DeviceActivity extends AppCompatActivity {
             this.mDialogue.setTextSize(18.0F);
             this.mDialogue.setLineSpacing(2.0F, 1.2F);
             LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            localLayoutParams.topMargin = 10;
+            localLayoutParams.topMargin = 15;
             addView(this.mDialogue, localLayoutParams);
 
             mDialogue.setVisibility(expanded ? VISIBLE : GONE);

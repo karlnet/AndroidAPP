@@ -7,12 +7,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ProtocolParser {
-    public void Parse(GHCB paramGHCB, String paramString) {
-        JsonObject localJsonObject = (JsonObject) new JsonParser().parse(paramString);
-        Log.i("orinoco", localJsonObject.toString());
-        paramGHCB.setHumidity(localJsonObject.get("payload").getAsJsonObject().get("dht11_humidity").getAsString());
-        paramGHCB.setTemperature(localJsonObject.get("payload").getAsJsonObject().get("dht11_temperature").getAsString());
-        paramGHCB.setLamp(localJsonObject.get("payload").getAsJsonObject().get("rgbled_switch").getAsBoolean());
-        paramGHCB.setPump(localJsonObject.get("payload").getAsJsonObject().get("motor_switch").getAsBoolean());
+    public void Parse(GHCB theGHCB, String jsonString) {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(jsonString);
+        Log.i("orinoco", jsonObject.toString());
+        theGHCB.setHumidity(jsonObject.get("payload").getAsJsonObject().get("dht11_humidity").getAsString());
+        theGHCB.setTemperature(jsonObject.get("payload").getAsJsonObject().get("dht11_temperature").getAsString());
+        theGHCB.setLamp(jsonObject.get("payload").getAsJsonObject().get("rgbled_switch").getAsBoolean());
+        theGHCB.setPump(jsonObject.get("payload").getAsJsonObject().get("motor_switch").getAsBoolean());
     }
 }

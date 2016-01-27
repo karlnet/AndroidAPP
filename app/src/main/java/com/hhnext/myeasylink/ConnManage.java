@@ -15,13 +15,13 @@ public class ConnManage {
         this.ctx = paramContext;
     }
 
-    public void startNewConnToGHCB(final GHCB paramGHCB) {
+    public void startNewConnToGHCB(final GHCB theGHCB) {
         MqttServiceAPI localMqttServiceAPI = new MqttServiceAPI(this.ctx);
-        paramGHCB.setMapi(localMqttServiceAPI);
-        localMqttServiceAPI.startMqttService("api.easylink.io", "1883", APPUser.userName, APPUser.userPassword, paramGHCB.getClientID(), paramGHCB.getOutTopic(), new MqttServiceListener() {
+        theGHCB.setMapi(localMqttServiceAPI);
+        localMqttServiceAPI.startMqttService("api.easylink.io", "1883", APPUser.userName, APPUser.userPassword, theGHCB.getClientID(), theGHCB.getOutTopic(), new MqttServiceListener() {
             public void onMqttReceiver(String paramAnonymousString1, String paramAnonymousString2) {
                 if (paramAnonymousString1.equals("payload"))
-                    ConnManage.protocolParser.Parse(paramGHCB, paramAnonymousString2);
+                    ConnManage.protocolParser.Parse(theGHCB, paramAnonymousString2);
             }
         });
     }

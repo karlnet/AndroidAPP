@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         String str = this.mEasylinkAPI.getSSID();
-        if ((str != null) && (str.equals("")) && (!str.contains("unknown"))) {
+        Log.i("orinoco", "ssid is:" + str);
+        if ((str != null) && (!str.equals("")) && (!str.contains("unknown"))) {
             this.ssid.setText(str);
             this.password.setText("iloveyou");
             return;

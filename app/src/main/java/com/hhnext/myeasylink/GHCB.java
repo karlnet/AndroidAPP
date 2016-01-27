@@ -31,18 +31,18 @@ public class GHCB {
     private GHCBStatus status = GHCBStatus.offline;
     private String temperature = "0";
 
-    private void PublishCommand(String paramString) {
+    private void PublishCommand(String command) {
         if (this.mapi != null)
-            this.mapi.publishCommand(getInTopic(), paramString, 0, false);
-        Log.i("orinoco", getInTopic() + ";" + paramString);
+            this.mapi.publishCommand(getInTopic(), command, 0, false);
+        Log.i("orinoco", getInTopic() + ";" + command);
     }
 
-    private void sendMsgToWindows(int paramInt) {
+    private void sendMsgToWindows(int msgID) {
         if (this.handler != null) {
-            Message localMessage = this.handler.obtainMessage(0);
-            localMessage.arg1 = paramInt;
-            localMessage.obj = this;
-            this.handler.sendMessage(localMessage);
+            Message msg = this.handler.obtainMessage(0);
+            msg.arg1 = msgID;
+            msg.obj = this;
+            this.handler.sendMessage(msg);
         }
     }
 
@@ -98,10 +98,10 @@ public class GHCB {
         return this.humidity;
     }
 
-    public void setHumidity(String paramString) {
-        if (this.humidity != paramString) {
-            this.humidity = paramString;
-            sendMsgToWindows(2);
+    public void setHumidity(String value) {
+        if (this.humidity != value) {
+            this.humidity = value;
+            sendMsgToWindows(GHCBAPP.HUMIDITY_CHANGED);
         }
     }
 
@@ -189,8 +189,8 @@ public class GHCB {
         return this.serialNo;
     }
 
-    public void setSerialNo(String paramString) {
-        this.serialNo = paramString;
+    public void setSerialNo(String value) {
+        this.serialNo = value;
     }
 
     public String getSsid() {
@@ -205,27 +205,26 @@ public class GHCB {
         return this.status;
     }
 
-    public void setStatus(GHCBStatus paramGHCBStatus) {
-        ConnManage localConnManage;
-        if (this.status != paramGHCBStatus) {
-            this.status = paramGHCBStatus;
-            localConnManage = GHCBManage.connManage;
-            if (paramGHCBStatus == GHCBStatus.online)
-                localConnManage.startNewConnToGHCB(this);
-        } else {
-            return;
+    public void setStatus(GHCBStatus value) {
+        ConnManage conn = GHCBManage.connManage;
+        if (this.status != value) {
+            this.status = value;
+            if (value == GHCBStatus.online) {
+                conn.startNewConnToGHCB(this);
+            } else if (value == GHCBStatus.offline) {
+                conn.stopConnToGHCB(this);
+            }
         }
-        localConnManage.stopConnToGHCB(this);
     }
 
     public String getTemperature() {
         return this.temperature;
     }
 
-    public void setTemperature(String paramString) {
-        if (this.temperature != paramString) {
-            this.temperature = paramString;
-            sendMsgToWindows(1);
+    public void setTemperature(String value) {
+        if (this.temperature != value) {
+            this.temperature = value;
+            sendMsgToWindows(GHCBAPP.TEMPERATURE_CHANGED);
         }
     }
 
@@ -233,10 +232,10 @@ public class GHCB {
         return this.lamp;
     }
 
-    public void setLamp(boolean paramBoolean) {
-        if (this.lamp != paramBoolean) {
-            this.lamp = paramBoolean;
-            sendMsgToWindows(3);
+    public void setLamp(boolean value) {
+        if (this.lamp != value) {
+            this.lamp = value;
+            sendMsgToWindows(GHCBAPP.LAMP_CHANGED);
         }
     }
 
@@ -244,10 +243,10 @@ public class GHCB {
         return this.pump;
     }
 
-    public void setPump(boolean paramBoolean) {
-        if (this.pump != paramBoolean) {
-            this.pump = paramBoolean;
-            sendMsgToWindows(4);
+    public void setPump(boolean value) {
+        if (this.pump != value) {
+            this.pump = value;
+            sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
         }
     }
 
