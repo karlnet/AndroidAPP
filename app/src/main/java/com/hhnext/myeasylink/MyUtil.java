@@ -1,19 +1,43 @@
 package com.hhnext.myeasylink;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.xutils.http.RequestParams;
+
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.json.JSONObject;
-import org.xutils.http.RequestParams;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MyUtil {
-    private static String appSecretKey;
+
+    private final static char[] hexArray = "0123456789abcdef".toCharArray();
+
+    private static String hmacSha1(String value, String key)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException,
+            InvalidKeyException {
+        String type = "HmacSHA1";
+        SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
+        Mac mac = Mac.getInstance(type);
+        mac.init(secret);
+        byte[] bytes = mac.doFinal(value.getBytes());
+        return bytesToHex(bytes);
+    }
+
+
+    private static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for (int j = 0; j < bytes.length; j++) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 
     private static String HexEncode(byte[] paramArrayOfByte) {
         StringBuilder localStringBuilder = new StringBuilder(2 * paramArrayOfByte.length);
@@ -50,45 +74,16 @@ public class MyUtil {
         return null;
     }
 
-    public static void setRequestParamsHeader(RequestParams paramRequestParams) {
-        paramRequestParams.addHeader("content-type", "application/json");
-        paramRequestParams.addHeader("X-Application-Id", "6a3d6800-1b07-4fc5-86ca-12bba8f8dc67");
-        paramRequestParams.addHeader("X-Request-Sign", APPUser.getRequestSign());
-        paramRequestParams.addHeader("Authorization", APPUser.getRequestAuthorization());
+    public static void setRequestParamsHeader(RequestParams requestParamsHeader) {
+        requestParamsHeader.addHeader("content-type", "application/json");
+        requestParamsHeader.addHeader("X-Application-Id", "6a3d6800-1b07-4fc5-86ca-12bba8f8dc67");
+        requestParamsHeader.addHeader("X-Request-Sign", APPUser.getRequestSign());
+        requestParamsHeader.addHeader("Authorization", APPUser.getRequestAuthorization());
     }
 
-    public static String togglgText(boolean paramBoolean) {
-        if (paramBoolean)
-            return "开";
-        return "关";
+    public static String togglgText(boolean toggle) {
+        return toggle ? "开" : "关";
     }
 
-    public String getAppSecretKey() {
-        return appSecretKey;
-    }
 
-    public void setAppSecretKey(String paramString) {
-        appSecretKey = paramString;
-    }
-
-    protected void httpMsgToBoard(JSONObject paramJSONObject, String paramString) {
-        try {
-            HttpURLConnection localHttpURLConnection = (HttpURLConnection) new URL(paramString).openConnection();
-            localHttpURLConnection.setDoOutput(true);
-            localHttpURLConnection.setDoInput(true);
-            localHttpURLConnection.setUseCaches(false);
-            localHttpURLConnection.setConnectTimeout(30000);
-            localHttpURLConnection.setReadTimeout(30000);
-            localHttpURLConnection.setRequestProperty("Content-type", "application/json");
-            localHttpURLConnection.setRequestMethod("POST");
-            localHttpURLConnection.connect();
-            ObjectOutputStream localObjectOutputStream = new ObjectOutputStream(localHttpURLConnection.getOutputStream());
-            localObjectOutputStream.writeObject(paramJSONObject);
-            localObjectOutputStream.flush();
-            localObjectOutputStream.close();
-            new ObjectInputStream(localHttpURLConnection.getInputStream());
-            return;
-        } catch (Exception localException) {
-        }
-    }
 }

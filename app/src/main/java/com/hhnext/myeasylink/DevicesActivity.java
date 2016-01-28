@@ -98,8 +98,8 @@ public class DevicesActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(paramMenu);
     }
 
-    public boolean onOptionsItemSelected(MenuItem paramMenuItem) {
-        switch (paramMenuItem.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case android.R.id.home:
                 System.exit(0);
             case R.id.action_easylink:
@@ -108,7 +108,7 @@ public class DevicesActivity extends AppCompatActivity {
             case R.id.action_setting:
                 return true;
             default:
-                return super.onOptionsItemSelected(paramMenuItem);
+                return super.onOptionsItemSelected(menuItem);
         }
     }
 

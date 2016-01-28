@@ -70,31 +70,34 @@
         android:text="登录"
         android:textSize="20.0dip" />
 
-    <Button
-        android:id="@+id/registerUser"
+    <TextView
+        android:id="@+id/forgetPasswordLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/textView02"
         android:layout_below="@id/loginButton"
         android:layout_marginTop="30.0dip"
-        android:text="新用户注册/忘记密码" />
+        android:text="Medium Text"
+        android:textAppearance="?android:textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignRight="@id/mobileNumber"
-        android:layout_below="@id/registerUser"
-        android:layout_marginTop="44.0dip"
-        android:text="New Button" />
 
     <TextView
         android:id="@+id/registerUserLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/mobileNumber"
-        android:layout_alignTop="@id/registerUser"
+        android:layout_alignTop="@id/forgetPasswordLink"
         android:text="Medium Text"
         android:textAppearance="?android:textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/testButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+
+        android:layout_below="@id/forgetPasswordLink"
+        android:layout_marginTop="44.0dip"
+        android:text="New Button" />
+
 </RelativeLayout>

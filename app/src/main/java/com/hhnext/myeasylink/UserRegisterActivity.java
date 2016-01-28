@@ -3,19 +3,17 @@ package com.hhnext.myeasylink;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.xutils.HttpManager;
-import org.xutils.common.Callback.CancelledException;
 import org.xutils.common.Callback.CommonCallback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -29,6 +27,11 @@ public class UserRegisterActivity extends AppCompatActivity {
     private TextView smsCode;
 
     private void initComponent() {
+
+        ActionBar localActionBar = getSupportActionBar();
+        if (localActionBar != null)
+            localActionBar.setDisplayHomeAsUpEnabled(true);
+
         this.msgText = ((TextView) findViewById(R.id.msgTextR));
         this.msgText.setVisibility(View.GONE);
         this.smsCode = ((TextView) findViewById(R.id.verificationNumber));
@@ -112,5 +115,18 @@ public class UserRegisterActivity extends AppCompatActivity {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_register);
         initComponent();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            default:
+                return super.onOptionsItemSelected(menuItem);
+            case android.R.id.home:
+                Intent localIntent = new Intent(this, LoginActivity.class);
+                localIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(localIntent);
+                return true;
+        }
+
     }
 }
