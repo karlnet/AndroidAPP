@@ -1,6 +1,7 @@
 package com.hhnext.myeasylink;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -18,15 +19,23 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 
+import org.json.JSONObject;
 import org.xutils.common.Callback.CommonCallback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String text1 = "注册新用户";
     private static final String text2 = "忘记密码";
+
 
     private TextView msgText, mobileNumber, password, registerUserLink, forgetPasswordLink;
     private Button testButton, loginButton;
@@ -68,6 +77,43 @@ public class LoginActivity extends AppCompatActivity {
         this.testButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
 
+//                String JsonString = "{\"scope\":\"my-bucket:sunflower.jpg\",\"deadline\":1451491200,\"returnBody\":\"{\\\"name\\\":$(fname),\\\"size\\\":$(fsize),\\\"w\\\":$(imageInfo.width),\\\"h\\\":$(imageInfo.height),\\\"hash\\\":$(etag)}\"}" ;
+//                byte[] data = null;
+//                try {
+//                    data = JsonString.getBytes("UTF-8");
+//                } catch (Exception e1) {
+//                    e1.printStackTrace();
+//                }
+//                String base64String = Base64.encodeToString(data, Base64.DEFAULT);
+//                Log.i("orinoco", base64String);
+//                String sign= null;
+//                try {
+//                    sign = MyUtil.hmacSha1(base64String, "MY_SECRET_KEY");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                UploadManager uploadManager = new UploadManager();
+                String key = "/images/yunan001.jpg";
+                String token = APPUser.QiniuAuth.uploadToken(APPUser.bucket, key);
+
+                AssetManager a = getAssets();
+                byte[] data = null;
+                try {
+                    InputStream is = a.open("yunan001.jpg");
+                    data = new byte[is.available()];
+                    is.read(data);
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                uploadManager.put(data, key, token, new UpCompletionHandler() {
+                    @Override
+                    public void complete(String key, ResponseInfo info, JSONObject response) {
+                        Log.i("orinoco", response.toString());
+                    }
+                }, null);
 
 
             }
@@ -111,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_login);
+
         initComponent();
     }
 

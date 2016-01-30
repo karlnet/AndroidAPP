@@ -251,7 +251,8 @@ public class GHCB {
     }
 
     public void lampOFF() {
-        PublishCommand("{\"rgbled_switch\":false}");
+        String commamd = "{\"rgbled_switch\":false}";
+        PublishCommand(commamd);
     }
 
     public void lampON() {

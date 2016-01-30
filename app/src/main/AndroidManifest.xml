@@ -32,8 +32,6 @@
             </intent-filter>
         </activity>
         <service android:name="com.mxchip.mqttservice2.MqttService" />
-
-
         <activity
             android:name="com.hhnext.myeasylink.DevicesActivity"
             android:launchMode="singleTask" />

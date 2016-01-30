@@ -47,7 +47,7 @@ public class DeviceActivity extends AppCompatActivity {
         this.cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 ImageOptions localImageOptions = new ImageOptions.Builder().setSize(640, 480).setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
-                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com1.z0.glb.clouddn.com/car.jpg", localImageOptions);
+                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com1.z0.glb.clouddn.com/images/yunan001.jpg", localImageOptions);
             }
         });
         this.toggleLamp = ((ToggleButton) findViewById(R.id.toggleLamp));
