@@ -74,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         this.password = ((TextView) findViewById(R.id.password));
 
         this.testButton = ((Button) findViewById(R.id.testButton));
+        this.testButton.setVisibility(View.GONE);
         this.testButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
 

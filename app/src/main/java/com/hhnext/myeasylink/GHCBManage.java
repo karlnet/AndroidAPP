@@ -19,7 +19,7 @@ public class GHCBManage {
     }
 
     public static String getActiveToken(String paramString) {
-        return MyUtil.MD5Encode(paramString + "9a740523-d5f3-40f3-afb4-29b6d7c2726a");
+        return MyUtil.MD5Encode(paramString + productSecertKey);
     }
 
     public static String getActiveURL(String paramString) {

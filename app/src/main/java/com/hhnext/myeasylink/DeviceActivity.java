@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +21,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import org.xutils.image.ImageOptions;
-import org.xutils.x;
+import com.google.gson.JsonObject;
+import com.qiniu.android.storage.UploadManager;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DeviceActivity extends AppCompatActivity {
     protected myHandler handler;
     protected GHCB mGHCB;
 
+    UploadManager uploadManager = new UploadManager();
 
     private TextView temperature, humidity, lamp, pump;
     private ImageView cameraImage;
@@ -46,28 +51,59 @@ public class DeviceActivity extends AppCompatActivity {
         this.cameraButton = ((ImageButton) findViewById(R.id.cameraButton));
         this.cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                ImageOptions localImageOptions = new ImageOptions.Builder().setSize(640, 480).setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
-                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com1.z0.glb.clouddn.com/images/yunan001.jpg", localImageOptions);
+
+                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+//                String key = "//"+mGHCB.getMAC()+"//"+APPUser.userName+"//"+df.format(new Date())+".jpg";
+                String key = df.format(new Date()) + ".jpg";
+                String token = APPUser.QiniuAuth.uploadToken(APPUser.bucket, key);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("key", key);
+                jsonObject.addProperty("token", token);
+                JsonObject jsonObject1 = new JsonObject();
+                jsonObject1.add("take_photo", jsonObject);
+                mGHCB.takePhoto(jsonObject1.toString());
+                Log.i("orinoco", jsonObject1.toString());
+
+               /* AssetManager a = getAssets();
+                byte[] data = null;
+                try {
+                    InputStream is = a.open("yunan001.jpg");
+                    data = new byte[is.available()];
+                    is.read(data);
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                uploadManager.put(data, key, token, new UpCompletionHandler() {
+                    @Override
+                    public void complete(String key, ResponseInfo info, JSONObject response) {
+                        Log.i("orinoco", response.toString());
+                    }
+                }, null);*/
+//                ImageOptions localImageOptions = new ImageOptions.Builder().setSize(640, 480).setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
+//                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com1.z0.glb.clouddn.com/images/yunan001.jpg", localImageOptions);
             }
         });
         this.toggleLamp = ((ToggleButton) findViewById(R.id.toggleLamp));
         this.toggleLamp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton paramAnonymousCompoundButton, boolean paramAnonymousBoolean) {
                 if (!paramAnonymousBoolean) {
-                    DeviceActivity.this.mGHCB.lampON();
+                    mGHCB.lampON();
                     return;
                 }
-                DeviceActivity.this.mGHCB.lampOFF();
+                mGHCB.lampOFF();
             }
         });
         this.togglepump = ((ToggleButton) findViewById(R.id.togglePump));
         this.togglepump.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean paramAnonymousBoolean) {
                 if (!paramAnonymousBoolean) {
-                    DeviceActivity.this.mGHCB.pumpON();
+                    mGHCB.pumpON();
                     return;
                 }
-                DeviceActivity.this.mGHCB.pumpOFF();
+                mGHCB.pumpOFF();
             }
         });
         this.listView = ((ListView) findViewById(R.id.descriptionListView));
@@ -83,32 +119,32 @@ public class DeviceActivity extends AppCompatActivity {
 
     private void refresUI() {
 
-        this.humidity.setText(this.mGHCB.getHumidity());
-        this.temperature.setText(this.mGHCB.getTemperature());
-        this.lamp.setText(MyUtil.togglgText(this.mGHCB.isLamp()));
-        this.pump.setText(MyUtil.togglgText(this.mGHCB.isPump()));
+        humidity.setText(mGHCB.getHumidity());
+        temperature.setText(mGHCB.getTemperature());
+        lamp.setText(MyUtil.togglgText(mGHCB.isLamp()));
+        pump.setText(MyUtil.togglgText(mGHCB.isPump()));
 
-        this.toggleLamp.setChecked(!mGHCB.isLamp());
-        this.togglepump.setChecked(!mGHCB.isPump());
+        toggleLamp.setChecked(!mGHCB.isLamp());
+        togglepump.setChecked(!mGHCB.isPump());
 
-        if (this.speechListAdapter != null)
-            this.speechListAdapter.notifyDataSetChanged();
+        if (speechListAdapter != null)
+            speechListAdapter.notifyDataSetChanged();
     }
 
     private void updateView(Message msg) {
         int msgID = msg.arg1;
         switch (msgID) {
             case GHCBAPP.HUMIDITY_CHANGED:
-                this.humidity.setText(this.mGHCB.getHumidity());
+                this.humidity.setText(mGHCB.getHumidity());
                 return;
             case GHCBAPP.TEMPERATURE_CHANGED:
-                this.temperature.setText(this.mGHCB.getTemperature());
+                temperature.setText(mGHCB.getTemperature());
                 return;
             case GHCBAPP.LAMP_CHANGED:
-                this.lamp.setText(MyUtil.togglgText(this.mGHCB.isLamp()));
+                lamp.setText(MyUtil.togglgText(mGHCB.isLamp()));
                 return;
             case GHCBAPP.PUMP_CHANGED:
-                this.pump.setText(MyUtil.togglgText(this.mGHCB.isPump()));
+                pump.setText(MyUtil.togglgText(mGHCB.isPump()));
                 return;
             case GHCBAPP.ALL_CHANGED:
                 refresUI();
@@ -122,15 +158,15 @@ public class DeviceActivity extends AppCompatActivity {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_device);
         initComponent();
-        this.mGHCB = GHCBManage.GHCBs.get(getIntent().getStringExtra("com.hhnext.myeasylink.DevID"));
-        this.speechListAdapter = new SpeechListAdapter(this);
-        this.listView.setAdapter(this.speechListAdapter);
+        mGHCB = GHCBManage.GHCBs.get(getIntent().getStringExtra("com.hhnext.myeasylink.DevID"));
+        speechListAdapter = new SpeechListAdapter(this);
+        listView.setAdapter(speechListAdapter);
     }
 
-    public boolean onOptionsItemSelected(MenuItem paramMenuItem) {
-        switch (paramMenuItem.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             default:
-                return super.onOptionsItemSelected(paramMenuItem);
+                return super.onOptionsItemSelected(menuItem);
             case android.R.id.home:
                 Intent localIntent = new Intent(this, DevicesActivity.class);
                 localIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

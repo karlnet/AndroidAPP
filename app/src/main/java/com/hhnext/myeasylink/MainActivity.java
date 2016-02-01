@@ -46,13 +46,15 @@ public class MainActivity extends AppCompatActivity {
         this.password = ((EditText) findViewById(R.id.password));
         this.startSearch = ((Button) findViewById(R.id.startsearch));
         this.startSearch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
+            public void onClick(View view) {
                 final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setTitle("请稍等...");
                 progressDialog.setMessage("正在配置网络");
                 progressDialog.setCancelable(false);
-                progressDialog.setButton(-2, "停止配置", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface paramAnonymous2DialogInterface, int paramAnonymous2Int) {
+                progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "停止配置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
                         MainActivity.this.mDNSAPI.stopMdnsService();
                         MainActivity.this.mEasylinkAPI.stopEasyLink();
                     }
@@ -63,72 +65,72 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.mEasylinkAPI.startEasyLink(MainActivity.this, MainActivity.this.ssid.getText().toString().trim(), MainActivity.this.password.getText().toString().trim());
                         MainActivity.this.mDNSAPI.startMdnsService("_easylink._tcp.local.", new JmdnsListener() {
                             public void onJmdnsFind(JSONArray jsonArray) {
-                                if ((MainActivity.first) && (jsonArray != null) && (jsonArray.length() != 0))
+                                if ((MainActivity.first) && (jsonArray != null) && (jsonArray.length() != 0)) {
                                     first = false;
-                                try {
-                                    MainActivity.this.mEasylinkAPI.stopEasyLink();
-                                    MainActivity.this.mDNSAPI.stopMdnsService();
-                                    progressDialog.dismiss();
+                                    try {
+                                        MainActivity.this.mEasylinkAPI.stopEasyLink();
+                                        MainActivity.this.mDNSAPI.stopMdnsService();
+                                        progressDialog.dismiss();
 
-                                    ip = ((JsonObject) jsonArray.get(0)).get("deviceIP").getAsString();
-                                    mac = ((JsonObject) jsonArray.get(0)).get("deviceMac").getAsString();
-                                } catch (Exception e) {
+                                        ip = jsonArray.getJSONObject(0).getString("deviceIP");
+                                        mac = jsonArray.getJSONObject(0).getString("deviceMac");
+                                    } catch (Exception e) {
 
-                                }
+                                    }
 
-                                JsonObject jsonObject = new JsonObject();
-                                jsonObject.addProperty("login_id", "admin");
-                                jsonObject.addProperty("dev_passwd", "123456");
-                                jsonObject.addProperty("user_token", GHCBManage.getActiveToken(MainActivity.this.mac));
-
-                                RequestParams localRequestParams = new RequestParams(GHCBManage.getActiveURL(MainActivity.this.ip));
-                                localRequestParams.addHeader("content-type", "application/json");
-                                localRequestParams.setBodyContent(jsonObject.toString());
-                                try {
-                                    x.http().post(localRequestParams, new CommonCallback<String>() {
-                                        public void onCancelled(CancelledException paramAnonymous4CancelledException) {
-                                        }
-
-                                        public void onError(Throwable paramAnonymous4Throwable, boolean paramAnonymous4Boolean) {
-                                            Log.i("orinoco", "active:" + paramAnonymous4Throwable.toString());
-                                        }
-
-                                        public void onFinished() {
-                                        }
-
-                                        public void onSuccess(String paramAnonymous4String) {
-                                            RequestParams localRequestParams = new RequestParams("http://api.easylink.io/v1/key/authorize");
-                                            MyUtil.setRequestParamsHeader(localRequestParams);
-                                            JsonObject localJSONObject = new JsonObject();
-                                            try {
-                                                localJSONObject.addProperty("active_token", GHCBManage.getActiveToken(MainActivity.this.mac));
-                                                localRequestParams.setBodyContent(localJSONObject.toString());
-                                                x.http().post(localRequestParams, new CommonCallback<String>() {
-                                                    public void onCancelled(CancelledException paramAnonymous5CancelledException) {
-                                                    }
-
-                                                    public void onError(Throwable paramAnonymous5Throwable, boolean paramAnonymous5Boolean) {
-                                                        Log.i("orinoco", "bind reponse:" + paramAnonymous5Throwable.toString());
-                                                    }
-
-                                                    public void onFinished() {
-                                                    }
-
-                                                    public void onSuccess(String paramAnonymous5String) {
-                                                        Intent localIntent = new Intent(MainActivity.this, DevicesActivity.class);
-                                                        MainActivity.this.startActivity(localIntent);
-                                                    }
-                                                });
-                                            } catch (Exception e) {
-
+                                    JsonObject jsonObject = new JsonObject();
+                                    jsonObject.addProperty("login_id", "admin");
+                                    jsonObject.addProperty("dev_passwd", "123456");
+                                    jsonObject.addProperty("user_token", GHCBManage.getActiveToken(MainActivity.this.mac));
+                                    Log.i("orinoco", jsonObject.toString());
+                                    RequestParams localRequestParams = new RequestParams(GHCBManage.getActiveURL(MainActivity.this.ip));
+                                    localRequestParams.addHeader("content-type", "application/json");
+                                    localRequestParams.setBodyContent(jsonObject.toString());
+                                    try {
+                                        x.http().post(localRequestParams, new CommonCallback<String>() {
+                                            public void onCancelled(CancelledException paramAnonymous4CancelledException) {
                                             }
-                                        }
-                                    });
 
-                                } catch (Exception e2) {
+                                            public void onError(Throwable paramAnonymous4Throwable, boolean paramAnonymous4Boolean) {
+                                                Log.i("orinoco", "active:" + paramAnonymous4Throwable.toString());
+                                            }
 
+                                            public void onFinished() {
+                                            }
+
+                                            public void onSuccess(String paramAnonymous4String) {
+                                                RequestParams localRequestParams = new RequestParams("http://api.easylink.io/v1/key/authorize");
+                                                MyUtil.setRequestParamsHeader(localRequestParams);
+                                                JsonObject localJSONObject = new JsonObject();
+                                                try {
+                                                    localJSONObject.addProperty("active_token", GHCBManage.getActiveToken(MainActivity.this.mac));
+                                                    localRequestParams.setBodyContent(localJSONObject.toString());
+                                                    x.http().post(localRequestParams, new CommonCallback<String>() {
+                                                        public void onCancelled(CancelledException paramAnonymous5CancelledException) {
+                                                        }
+
+                                                        public void onError(Throwable paramAnonymous5Throwable, boolean paramAnonymous5Boolean) {
+                                                            Log.i("orinoco", "bind reponse:" + paramAnonymous5Throwable.toString());
+                                                        }
+
+                                                        public void onFinished() {
+                                                        }
+
+                                                        public void onSuccess(String paramAnonymous5String) {
+                                                            Intent localIntent = new Intent(MainActivity.this, DevicesActivity.class);
+                                                            MainActivity.this.startActivity(localIntent);
+                                                        }
+                                                    });
+                                                } catch (Exception e) {
+
+                                                }
+                                            }
+                                        });
+
+                                    } catch (Exception e2) {
+
+                                    }
                                 }
-
                             }
                         });
                     }

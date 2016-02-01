@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.mxchip.mqttservice2.MqttServiceAPI;
 
 public class GHCB {
@@ -249,24 +250,38 @@ public class GHCB {
             sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
         }
     }
-
     public void lampOFF() {
-        String commamd = "{\"rgbled_switch\":false}";
-        PublishCommand(commamd);
+        lampSwitch(false);
     }
 
     public void lampON() {
-        PublishCommand("{\"rgbled_switch\":true}");
+        lampSwitch(true);
     }
-
     public void pumpOFF() {
-        PublishCommand("{\"motor_switch\":false}");
+        pumpSwitch(false);
     }
 
     public void pumpON() {
-        PublishCommand("{\"motor_switch\":true}");
+        pumpSwitch(true);
     }
 
+    private void lampSwitch(boolean flag) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("rgbled_switch", flag);
+        PublishCommand(jsonObject.toString());
+
+    }
+
+    private void pumpSwitch(boolean flag) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("motor_switch", flag);
+        PublishCommand(jsonObject.toString());
+
+    }
+
+    public void takePhoto(String commamd) {
+        PublishCommand(commamd);
+    }
     public static enum GHCBStatus {online, offline, activated, unactivated}
 
 }
