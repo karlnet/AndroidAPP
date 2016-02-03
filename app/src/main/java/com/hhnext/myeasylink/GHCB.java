@@ -31,6 +31,20 @@ public class GHCB {
     private String ssid;
     private GHCBStatus status = GHCBStatus.offline;
     private String temperature = "0";
+    private boolean hasImage = false;
+
+    public boolean isHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(boolean value) {
+
+        if (this.hasImage != value) {
+            this.hasImage = value;
+            if (hasImage)
+                sendMsgToWindows(GHCBAPP.HASIMAGE_CHANGED);
+        }
+    }
 
     private void PublishCommand(String command) {
         if (this.mapi != null)
@@ -250,6 +264,7 @@ public class GHCB {
             sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
         }
     }
+
     public void lampOFF() {
         lampSwitch(false);
     }
@@ -257,6 +272,7 @@ public class GHCB {
     public void lampON() {
         lampSwitch(true);
     }
+
     public void pumpOFF() {
         pumpSwitch(false);
     }
@@ -282,6 +298,7 @@ public class GHCB {
     public void takePhoto(String commamd) {
         PublishCommand(commamd);
     }
+
     public static enum GHCBStatus {online, offline, activated, unactivated}
 
 }

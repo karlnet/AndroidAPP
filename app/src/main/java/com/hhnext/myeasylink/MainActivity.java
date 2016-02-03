@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                                     jsonObject.addProperty("dev_passwd", "123456");
                                     jsonObject.addProperty("user_token", GHCBManage.getActiveToken(MainActivity.this.mac));
                                     Log.i("orinoco", jsonObject.toString());
+
                                     RequestParams localRequestParams = new RequestParams(GHCBManage.getActiveURL(MainActivity.this.ip));
                                     localRequestParams.addHeader("content-type", "application/json");
                                     localRequestParams.setBodyContent(jsonObject.toString());
@@ -101,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
                                             public void onSuccess(String paramAnonymous4String) {
                                                 RequestParams localRequestParams = new RequestParams("http://api.easylink.io/v1/key/authorize");
                                                 MyUtil.setRequestParamsHeader(localRequestParams);
-                                                JsonObject localJSONObject = new JsonObject();
+                                                JsonObject jsonObject = new JsonObject();
                                                 try {
-                                                    localJSONObject.addProperty("active_token", GHCBManage.getActiveToken(MainActivity.this.mac));
-                                                    localRequestParams.setBodyContent(localJSONObject.toString());
+                                                    jsonObject.addProperty("active_token", GHCBManage.getActiveToken(MainActivity.this.mac));
+                                                    localRequestParams.setBodyContent(jsonObject.toString());
                                                     x.http().post(localRequestParams, new CommonCallback<String>() {
                                                         public void onCancelled(CancelledException paramAnonymous5CancelledException) {
                                                         }

@@ -24,6 +24,9 @@ import android.widget.ToggleButton;
 import com.google.gson.JsonObject;
 import com.qiniu.android.storage.UploadManager;
 
+import org.xutils.image.ImageOptions;
+import org.xutils.x;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,6 +35,7 @@ public class DeviceActivity extends AppCompatActivity {
     protected GHCB mGHCB;
 
     UploadManager uploadManager = new UploadManager();
+    String key, token;
 
     private TextView temperature, humidity, lamp, pump;
     private ImageView cameraImage;
@@ -54,8 +58,8 @@ public class DeviceActivity extends AppCompatActivity {
 
                 SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 //                String key = "//"+mGHCB.getMAC()+"//"+APPUser.userName+"//"+df.format(new Date())+".jpg";
-                String key = df.format(new Date()) + ".jpg";
-                String token = APPUser.QiniuAuth.uploadToken(APPUser.bucket, key);
+                key = df.format(new Date()) + ".jpg";
+                token = APPUser.QiniuAuth.uploadToken(APPUser.bucket, key);
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("key", key);
                 jsonObject.addProperty("token", token);
@@ -145,6 +149,11 @@ public class DeviceActivity extends AppCompatActivity {
                 return;
             case GHCBAPP.PUMP_CHANGED:
                 pump.setText(MyUtil.togglgText(mGHCB.isPump()));
+                return;
+            case GHCBAPP.HASIMAGE_CHANGED:
+                ImageOptions localImageOptions = new ImageOptions.Builder().setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
+//                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/"+key+"?imageMogr2/thumbnail/480x320!", localImageOptions);
+                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/MyTest.jpg?imageMogr2/thumbnail/480x320!", localImageOptions);
                 return;
             case GHCBAPP.ALL_CHANGED:
                 refresUI();
