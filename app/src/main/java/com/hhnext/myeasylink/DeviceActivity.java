@@ -92,22 +92,23 @@ public class DeviceActivity extends AppCompatActivity {
         });
         this.toggleLamp = ((ToggleButton) findViewById(R.id.toggleLamp));
         this.toggleLamp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton paramAnonymousCompoundButton, boolean paramAnonymousBoolean) {
-                if (!paramAnonymousBoolean) {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    mGHCB.lampOFF();
+                else
                     mGHCB.lampON();
-                    return;
-                }
-                mGHCB.lampOFF();
+                cameraButton.performClick();
             }
         });
         this.togglepump = ((ToggleButton) findViewById(R.id.togglePump));
         this.togglepump.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton compoundButton, boolean paramAnonymousBoolean) {
-                if (!paramAnonymousBoolean) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    mGHCB.pumpOFF();
+                else
                     mGHCB.pumpON();
-                    return;
-                }
-                mGHCB.pumpOFF();
+                cameraButton.performClick();
             }
         });
         this.listView = ((ListView) findViewById(R.id.descriptionListView));
@@ -152,8 +153,8 @@ public class DeviceActivity extends AppCompatActivity {
                 return;
             case GHCBAPP.HASIMAGE_CHANGED:
                 ImageOptions localImageOptions = new ImageOptions.Builder().setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
-//                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/"+key+"?imageMogr2/thumbnail/480x320!", localImageOptions);
-                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/MyTest.jpg?imageMogr2/thumbnail/480x320!", localImageOptions);
+                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/" + key + "?imageMogr2/thumbnail/480x320!", localImageOptions);
+//                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/MyTest.jpg?imageMogr2/thumbnail/480x320!", localImageOptions);
                 return;
             case GHCBAPP.ALL_CHANGED:
                 refresUI();
