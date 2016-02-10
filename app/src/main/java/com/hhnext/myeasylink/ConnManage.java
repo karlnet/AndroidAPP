@@ -19,10 +19,14 @@ public class ConnManage {
         MqttServiceAPI localMqttServiceAPI = new MqttServiceAPI(this.ctx);
         theGHCB.setMapi(localMqttServiceAPI);
         localMqttServiceAPI.startMqttService("api.easylink.io", "1883", APPUser.userName, APPUser.userPassword, theGHCB.getClientID(), theGHCB.getOutTopic(), new MqttServiceListener() {
-            public void onMqttReceiver(String paramAnonymousString1, String paramAnonymousString2) {
-                if (paramAnonymousString1.equals("payload"))
-                    ConnManage.protocolParser.Parse(theGHCB, paramAnonymousString2);
+
+            @Override
+            public void onMqttReceiver(String s, String s1) {
+                if (s.equals("payload"))
+                    ConnManage.protocolParser.Parse(theGHCB, s1);
             }
+
+
         });
     }
 

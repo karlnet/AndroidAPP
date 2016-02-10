@@ -39,11 +39,11 @@ public class GHCB {
 
     public void setHasImage(boolean value) {
 
-        if (this.hasImage != value) {
+
             this.hasImage = value;
             if (hasImage)
                 sendMsgToWindows(GHCBAPP.HASIMAGE_CHANGED);
-        }
+
     }
 
     private void PublishCommand(String command) {
@@ -283,14 +283,14 @@ public class GHCB {
 
     private void lampSwitch(boolean flag) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("rgbled_switch", flag);
+        jsonObject.addProperty("lamp_switch", flag);
         PublishCommand(jsonObject.toString());
 
     }
 
     private void pumpSwitch(boolean flag) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("motor_switch", flag);
+        jsonObject.addProperty("pump_switch", flag);
         PublishCommand(jsonObject.toString());
 
     }

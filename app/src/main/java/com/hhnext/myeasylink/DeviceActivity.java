@@ -41,6 +41,7 @@ public class DeviceActivity extends AppCompatActivity {
     private ImageView cameraImage;
     private ImageButton cameraButton;
     private ToggleButton toggleLamp, togglepump;
+    private CompoundButton.OnCheckedChangeListener mPumpListener, mLampListener;
     private ListView listView;
     private SpeechListAdapter speechListAdapter;
 
@@ -91,7 +92,7 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
         this.toggleLamp = ((ToggleButton) findViewById(R.id.toggleLamp));
-        this.toggleLamp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mLampListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
@@ -100,17 +101,20 @@ public class DeviceActivity extends AppCompatActivity {
                     mGHCB.lampON();
                 cameraButton.performClick();
             }
-        });
+        };
+//        this.toggleLamp.setOnCheckedChangeListener(mLampListener);
         this.togglepump = ((ToggleButton) findViewById(R.id.togglePump));
-        this.togglepump.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mPumpListener = new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
                     mGHCB.pumpOFF();
                 else
                     mGHCB.pumpON();
+
                 cameraButton.performClick();
             }
-        });
+        };
+//        this.togglepump.setOnCheckedChangeListener(mPumpListener);
         this.listView = ((ListView) findViewById(R.id.descriptionListView));
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterView, View l, int position, long id) {
@@ -122,15 +126,25 @@ public class DeviceActivity extends AppCompatActivity {
             localActionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    private void setLampStatus() {
+        lamp.setText(MyUtil.togglgText(mGHCB.isLamp()));
+        toggleLamp.setOnCheckedChangeListener(null);
+        toggleLamp.setChecked(!mGHCB.isLamp());
+        toggleLamp.setOnCheckedChangeListener(mLampListener);
+    }
+
+    private void setPumpStatus() {
+        pump.setText(MyUtil.togglgText(mGHCB.isPump()));
+        this.togglepump.setOnCheckedChangeListener(null);
+        togglepump.setChecked(!mGHCB.isPump());
+        this.togglepump.setOnCheckedChangeListener(mPumpListener);
+    }
     private void refresUI() {
 
         humidity.setText(mGHCB.getHumidity());
         temperature.setText(mGHCB.getTemperature());
-        lamp.setText(MyUtil.togglgText(mGHCB.isLamp()));
-        pump.setText(MyUtil.togglgText(mGHCB.isPump()));
-
-        toggleLamp.setChecked(!mGHCB.isLamp());
-        togglepump.setChecked(!mGHCB.isPump());
+        setLampStatus();
+        setPumpStatus();
 
         if (speechListAdapter != null)
             speechListAdapter.notifyDataSetChanged();
@@ -146,10 +160,10 @@ public class DeviceActivity extends AppCompatActivity {
                 temperature.setText(mGHCB.getTemperature());
                 return;
             case GHCBAPP.LAMP_CHANGED:
-                lamp.setText(MyUtil.togglgText(mGHCB.isLamp()));
+                setLampStatus();
                 return;
             case GHCBAPP.PUMP_CHANGED:
-                pump.setText(MyUtil.togglgText(mGHCB.isPump()));
+                setPumpStatus();
                 return;
             case GHCBAPP.HASIMAGE_CHANGED:
                 ImageOptions localImageOptions = new ImageOptions.Builder().setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
