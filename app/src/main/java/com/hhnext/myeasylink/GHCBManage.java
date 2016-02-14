@@ -14,6 +14,8 @@ public class GHCBManage {
     public static final String devicesURL = "http://easylink.io/v1/device/devices";
     public static final String modifyURL = "http://easylink.io/v1/device/modify";
     public static final String authorizeURL = "http://easylink.io/v1/key/user/authorize";
+    public static final String userQueryURL = "http://easylink.io/v1/device/user/query";
+
 
 
     public static ConnManage connManage;

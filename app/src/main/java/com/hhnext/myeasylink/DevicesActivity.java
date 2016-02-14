@@ -38,11 +38,14 @@ public class DevicesActivity extends AppCompatActivity {
         this.handler = new myHandler();
         this.lv = ((ListView) findViewById(R.id.devicesListView));
         this.lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, int paramAnonymousInt, long paramAnonymousLong) {
-                Intent localIntent = new Intent(DevicesActivity.this, DeviceActivity.class);
-                localIntent.putExtra("com.hhnext.myeasylink.DevID", DevicesActivity.this.mGHCBList[paramAnonymousInt].getDevID());
-                DevicesActivity.this.startActivity(localIntent);
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(DevicesActivity.this, DeviceActivity.class);
+                GHCBAPP.CURRENTGHCB = GHCBManage.GHCBs.get(mGHCBList[position].getDevID());
+//                 intent.putExtra("com.hhnext.myeasylink.DevID", DevicesActivity.this.mGHCBList[position].getDevID());
+                DevicesActivity.this.startActivity(intent);
             }
+
         });
         ActionBar localActionBar = getSupportActionBar();
         if (localActionBar != null)
@@ -93,9 +96,9 @@ public class DevicesActivity extends AppCompatActivity {
 
     }
 
-    public boolean onCreateOptionsMenu(Menu paramMenu) {
-        getMenuInflater().inflate(R.menu.devices_menu, paramMenu);
-        return super.onCreateOptionsMenu(paramMenu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.devices_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -134,10 +137,10 @@ public class DevicesActivity extends AppCompatActivity {
 
     public void scanDevices() {
 //        Log.i("orinoco", "start scan");
-        RequestParams localRequestParams = new RequestParams("http://easylink.io/v1/device/devices");
-        localRequestParams.addHeader("content-type", "application/json");
-        MyUtil.setRequestParamsHeader(localRequestParams);
-        x.http().post(localRequestParams, new CommonCallback<String>() {
+        RequestParams requestParams = new RequestParams(GHCBManage.devicesURL);
+
+        MyUtil.setRequestParamsHeader(requestParams);
+        x.http().post(requestParams, new CommonCallback<String>() {
             public void onCancelled(CancelledException paramAnonymousCancelledException) {
             }
 
@@ -152,9 +155,11 @@ public class DevicesActivity extends AppCompatActivity {
                 JsonArray jsonArray = (JsonArray) new JsonParser().parse(jsonString);
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JsonObject jsonObject = (JsonObject) jsonArray.get(i);
-//                    Log.i("orinoco","device is :"+jsonObject);
+                    Log.i("orinoco", "device is :" + jsonObject);
                     GHCB theGHCB = new GHCB();
                     theGHCB.setOwner(APPUser.userName);
+                    theGHCB.setPublicIPAddress(jsonObject.get("ip").getAsString());
+                    theGHCB.setDevAlias(jsonObject.get("alias").getAsString());
                     theGHCB.setMAC(jsonObject.get("bssid").getAsString());
                     theGHCB.setDevID(jsonObject.get("id").getAsString());
                     theGHCB.setCreateTime(jsonObject.get("created").getAsString());
@@ -213,7 +218,7 @@ public class DevicesActivity extends AppCompatActivity {
                 viewHolder = (DevicesActivity.ViewHolder) convertView.getTag();
             }
 
-            viewHolder.DeviceDescription.setText("大棚：" + DevicesActivity.this.mGHCBList[position].getMAC());
+            viewHolder.DeviceDescription.setText(mGHCBList[position].getDevAlias());
             viewHolder.DeviceTemperature.setText(DevicesActivity.this.mGHCBList[position].getTemperature());
             viewHolder.DeviceHumidity.setText(DevicesActivity.this.mGHCBList[position].getHumidity());
             viewHolder.DevicePump.setText(MyUtil.togglgText(DevicesActivity.this.mGHCBList[position].isPump()));

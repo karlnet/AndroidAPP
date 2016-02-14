@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_rename"
+        android:icon="@drawable/pencil3"
+        android:title="@string/app_setting"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_authorize"
+        android:icon="@drawable/user5"
+        android:title="@string/app_easylink"
+        app:showAsAction="always" />
 </menu>

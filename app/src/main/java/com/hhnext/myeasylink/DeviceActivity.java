@@ -1,6 +1,8 @@
 package com.hhnext.myeasylink;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,22 +10,27 @@ import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.gson.JsonObject;
 import com.qiniu.android.storage.UploadManager;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
@@ -36,7 +43,9 @@ public class DeviceActivity extends AppCompatActivity {
 
     UploadManager uploadManager = new UploadManager();
     String key, token;
-
+    ActionBar actionBar;
+    AlertDialog ad;
+    private EditText newName;
     private TextView temperature, humidity, lamp, pump;
     private ImageView cameraImage;
     private ImageButton cameraButton;
@@ -45,9 +54,16 @@ public class DeviceActivity extends AppCompatActivity {
     private ListView listView;
     private SpeechListAdapter speechListAdapter;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.device_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     private void initComponent() {
         this.handler = new myHandler();
+        newName = new EditText(DeviceActivity.this);
+
         this.temperature = ((TextView) findViewById(R.id.temperature));
         this.humidity = ((TextView) findViewById(R.id.humidity));
         this.lamp = ((TextView) findViewById(R.id.lamp));
@@ -121,9 +137,12 @@ public class DeviceActivity extends AppCompatActivity {
                 ((SpeechListAdapter) listView.getAdapter()).toggle(position);
             }
         });
-        ActionBar localActionBar = getSupportActionBar();
-        if (localActionBar != null)
-            localActionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(mGHCB.getDevAlias());
+        }
     }
 
     private void setLampStatus() {
@@ -139,6 +158,7 @@ public class DeviceActivity extends AppCompatActivity {
         togglepump.setChecked(!mGHCB.isPump());
         this.togglepump.setOnCheckedChangeListener(mPumpListener);
     }
+
     private void refresUI() {
 
         humidity.setText(mGHCB.getHumidity());
@@ -146,8 +166,11 @@ public class DeviceActivity extends AppCompatActivity {
         setLampStatus();
         setPumpStatus();
 
-        if (speechListAdapter != null)
+        if (speechListAdapter != null) {
+            speechListAdapter.refresh();
             speechListAdapter.notifyDataSetChanged();
+
+        }
     }
 
     private void updateView(Message msg) {
@@ -167,8 +190,15 @@ public class DeviceActivity extends AppCompatActivity {
                 return;
             case GHCBAPP.HASIMAGE_CHANGED:
                 ImageOptions localImageOptions = new ImageOptions.Builder().setPlaceholderScaleType(ImageView.ScaleType.MATRIX).setImageScaleType(ImageView.ScaleType.CENTER).build();
-                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/" + key + "?imageMogr2/thumbnail/480x320!", localImageOptions);
+                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/" + key + "?imageMogr2/thumbnail/512x384!", localImageOptions);
 //                x.image().bind(DeviceActivity.this.cameraImage, "http://7xq5wl.com2.z0.glb.qiniucdn.com/MyTest.jpg?imageMogr2/thumbnail/480x320!", localImageOptions);
+                return;
+            case GHCBAPP.IPADDRESS_CHANGED:
+                if (speechListAdapter != null) {
+                    speechListAdapter.refresh();
+                    speechListAdapter.notifyDataSetChanged();
+
+                }
                 return;
             case GHCBAPP.ALL_CHANGED:
                 refresUI();
@@ -181,22 +211,83 @@ public class DeviceActivity extends AppCompatActivity {
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_device);
+
+        mGHCB = GHCBAPP.CURRENTGHCB;
+        //mGHCB = GHCBManage.GHCBs.get(getIntent().getStringExtra("com.hhnext.myeasylink.DevID"));
+
+        if (mGHCB.getIPAddress().equals("0.0.0.0")) mGHCB.getGHCBStatus();
         initComponent();
-        mGHCB = GHCBManage.GHCBs.get(getIntent().getStringExtra("com.hhnext.myeasylink.DevID"));
         speechListAdapter = new SpeechListAdapter(this);
         listView.setAdapter(speechListAdapter);
     }
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            default:
-                return super.onOptionsItemSelected(menuItem);
             case android.R.id.home:
                 Intent localIntent = new Intent(this, DevicesActivity.class);
                 localIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(localIntent);
-                return true;
+                break;
+            case R.id.action_rename:
+                if (ad == null)
+                    ad = new AlertDialog.Builder(DeviceActivity.this)
+                            .setTitle("请输入设备新名称：")
+                            .setIcon(R.drawable.tranlate48)
+                            .setView(newName)
+                            .setCancelable(false)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    RequestParams requestParams = new RequestParams(GHCBManage.modifyURL);
+                                    JsonObject jsonObject = new JsonObject();
+                                    jsonObject.addProperty("device_id", mGHCB.getDevID());
+                                    jsonObject.addProperty("alias", newName.getText().toString());
+                                    requestParams.setBodyContent(jsonObject.toString());
+                                    MyUtil.setRequestParamsHeader(requestParams);
+                                    x.http().post(requestParams, new Callback.CommonCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String result) {
+                                            String name = newName.getText().toString();
+                                            mGHCB.setDevAlias(name);
+                                            actionBar.setTitle(name);
+                                            Toast.makeText(DeviceActivity.this, "设备名称修改成功！", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable ex, boolean isOnCallback) {
+                                            Toast.makeText(DeviceActivity.this, "设备名称修改失败！", Toast.LENGTH_SHORT).show();
+                                            Log.i("orinoco", "rename error :");
+                                            ex.printStackTrace();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(CancelledException cex) {
+
+                                        }
+
+                                        @Override
+                                        public void onFinished() {
+
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .show();
+                else
+                    ad.show();
+                break;
+            case R.id.action_authorize:
+                startActivity(new Intent(this, UserAuthorizeActivity.class));
+                break;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     protected void onPause() {
@@ -218,7 +309,18 @@ public class DeviceActivity extends AppCompatActivity {
 
         public SpeechListAdapter(Context ctx) {
             this.mContext = ctx;
-            this.mDialogue[0] = ("设备MAC: " + DeviceActivity.this.mGHCB.getMAC() + "\r\n设备编号: " + DeviceActivity.this.mGHCB.getDevID() + "\r\n设备创建时间: " + DeviceActivity.this.mGHCB.getCreateTime() + "\r\n设备离线时间: " + DeviceActivity.this.mGHCB.getOfflineTime() + "\r\n设备上线时间: " + DeviceActivity.this.mGHCB.getOnlineTime());
+            refresh();
+        }
+
+        public void refresh() {
+            this.mDialogue[0] =
+                    "设备IP地址: " + mGHCB.getPublicIPAddress() + "/" + mGHCB.getIPAddress() +
+                            "\r\n设备MAC: " + mGHCB.getMAC().toUpperCase() +
+                            "\r\n设备编号: " + mGHCB.getDevID().toUpperCase() +
+                            "\r\n设备创建时间: " + mGHCB.getCreateTime() +
+                            "\r\n设备离线时间: " + mGHCB.getOfflineTime() +
+                            "\r\n设备上线时间: " + mGHCB.getOnlineTime()
+            ;
         }
 
         public int getCount() {

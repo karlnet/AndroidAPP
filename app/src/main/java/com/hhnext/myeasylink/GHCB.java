@@ -10,13 +10,16 @@ import com.mxchip.mqttservice2.MqttServiceAPI;
 public class GHCB {
     public static final String password = "123456";
     public static final String userName = "admin";
-    private String IPAddress;
+    private String IPAddress = "0.0.0.0";
     private int ListViewindex;
     private String MAC;
     private String ROMVersion;
     private String createTime;
     private String description;
     private String devID;
+
+
+    private String devAlias;
     private String devToken;
     private Handler handler;
     private String humidity = "0";
@@ -25,7 +28,7 @@ public class GHCB {
     private String offlineTime;
     private String onlineTime;
     private String owner;
-    private String publicIPAddress;
+    private String publicIPAddress = "0.0.0.0";
     private boolean pump = true;
     private String serialNo;
     private String ssid;
@@ -33,18 +36,6 @@ public class GHCB {
     private String temperature = "0";
     private boolean hasImage = false;
 
-    public boolean isHasImage() {
-        return hasImage;
-    }
-
-    public void setHasImage(boolean value) {
-
-
-            this.hasImage = value;
-            if (hasImage)
-                sendMsgToWindows(GHCBAPP.HASIMAGE_CHANGED);
-
-    }
 
     private void PublishCommand(String command) {
         if (this.mapi != null)
@@ -59,6 +50,27 @@ public class GHCB {
             msg.obj = this;
             this.handler.sendMessage(msg);
         }
+    }
+
+    public String getDevAlias() {
+        return devAlias;
+    }
+
+    public void setDevAlias(String devAlias) {
+        this.devAlias = devAlias;
+    }
+
+    public boolean isHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(boolean value) {
+
+
+        this.hasImage = value;
+        if (hasImage)
+            sendMsgToWindows(GHCBAPP.HASIMAGE_CHANGED);
+
     }
 
     public String getActiveURL() {
@@ -121,11 +133,16 @@ public class GHCB {
     }
 
     public String getIPAddress() {
+
         return this.IPAddress;
     }
 
-    public void setIPAddress(String paramString) {
-        this.IPAddress = paramString;
+    public void setIPAddress(String value) {
+        if (this.IPAddress != value) {
+            this.IPAddress = value;
+            sendMsgToWindows(GHCBAPP.IPADDRESS_CHANGED);
+        }
+
     }
 
     public String getInTopic() {
@@ -291,6 +308,13 @@ public class GHCB {
     private void pumpSwitch(boolean flag) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("pump_switch", flag);
+        PublishCommand(jsonObject.toString());
+
+    }
+
+    public void getGHCBStatus() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("system_status", "true");
         PublishCommand(jsonObject.toString());
 
     }

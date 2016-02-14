@@ -14,6 +14,9 @@ public class GHCBAPP extends Application {
     public static final int LAMP_CHANGED = 4;
     public static final int PUMP_CHANGED = 5;
     public static final int HASIMAGE_CHANGED = 6;
+    public static final int IPADDRESS_CHANGED = 7;
+
+    public static GHCB CURRENTGHCB;
 
     public void onCreate() {
         super.onCreate();

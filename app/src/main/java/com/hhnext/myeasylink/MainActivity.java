@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
                                                         }
 
                                                         public void onSuccess(String paramAnonymous5String) {
-                                                            Intent localIntent = new Intent(MainActivity.this, DevicesActivity.class);
-                                                            MainActivity.this.startActivity(localIntent);
+                                                            Intent intent = new Intent(MainActivity.this, DevicesActivity.class);
+                                                            MainActivity.this.startActivity(intent);
                                                         }
                                                     });
                                                 } catch (Exception e) {

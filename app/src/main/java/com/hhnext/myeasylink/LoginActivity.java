@@ -146,9 +146,9 @@ public class LoginActivity extends AppCompatActivity {
                         JsonObject localJsonObject = (JsonObject) new JsonParser().parse(paramAnonymous2String);
                         APPUser.userToken = localJsonObject.get("user_token").getAsString();
                         APPUser.userID = localJsonObject.get("user_id").getAsString();
-                        Intent localIntent = new Intent(LoginActivity.this, DevicesActivity.class);
-                        localIntent.setFlags(32768);
-                        LoginActivity.this.startActivity(localIntent);
+                        Intent intent = new Intent(LoginActivity.this, DevicesActivity.class);
+                        intent.setFlags(32768);
+                        LoginActivity.this.startActivity(intent);
                     }
                 });
             }

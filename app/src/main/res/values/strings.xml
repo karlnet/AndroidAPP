@@ -1,5 +1,9 @@
 <resources>
     <string name="app_easylink">添加新设备</string>
+    <string name="user_add">添加用户</string>
+    <string name="user_delete">删除用户</string>
+    <string name="user_owner">指定管理员</string>
     <string name="app_name">农业大棚管理系统</string>
     <string name="app_setting">设置</string>
+    <string name="title_activity_user_authorize">授权管理</string>
 </resources>
