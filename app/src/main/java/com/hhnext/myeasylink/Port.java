@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/5/4.
  */
-public class Port implements RefreshListView, SetViewHolderData {
+public class Port implements RefreshData, SetViewHolderData {
 
 
 //    public CountDownLatch countDownLatch;
@@ -104,34 +104,22 @@ public class Port implements RefreshListView, SetViewHolderData {
     public void delPortNo(String no) {
     }
 
-    public ListView getListView() {
-        return null;
-    }
-
-    public void setListView(ListView listView) {
-    }
+//    public ListView getListView() {
+//        return null;
+//    }
+//
+//    public void setListView(ListView listView) {
+//    }
 
     public void setViewHolder(MyBaseAdapter.ViewHolder viewHolder) {
 
     }
 
-    public void refreshListView() {
+    public void refresh(ListView lv) {
 
-        Refresh.refreshListView(getListView(), this, listViewIndex);
-
-//        ListView lv = getListView();
-//        int start, last, current;
-//
-//        start = lv.getFirstVisiblePosition();
-//        last = lv.getLastVisiblePosition();
-//        current = listViewIndex;
-//
-//        if ((current <= last) && (current >= start)) {
-//            MyBaseAdapter.ViewHolder viewHolder = (MyBaseAdapter.ViewHolder) lv.getChildAt(current - start).getTag();
-//            setViewHolder(viewHolder);
-//        }
-
+        RefreshDataBase.refreshListViewData(lv, this, listViewIndex);
     }
+
 
     public boolean isPortDelFlag() {
         return portDelFlag;

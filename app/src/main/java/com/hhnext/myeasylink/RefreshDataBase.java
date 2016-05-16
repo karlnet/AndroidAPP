@@ -5,9 +5,9 @@ import android.widget.ListView;
 /**
  * Created by Administrator on 2016/5/10.
  */
-public class Refresh {
+public class RefreshDataBase {
 
-    public static void refreshListView(ListView lv, SetViewHolderData setViewHolderData, int current) {
+    public static void refreshListViewData(ListView lv, SetViewHolderData setViewHolderData, int current) {
 
         int start, last;
 

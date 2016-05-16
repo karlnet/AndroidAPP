@@ -17,24 +17,16 @@ import org.xutils.x;
 import java.util.HashMap;
 import java.util.List;
 
-public class GHCB implements RefreshListView, SetViewHolderData {
+public class GHCB implements RefreshData, SetViewHolderData {
     public final static int inBoardPort = 10;
     public final static int defaultRly1 = 0;
     public final static int defaultRly2 = 1;
-    //    private GHCBManage gHCBManage;
     public static final String password = "123456";
     public static final String userName = "admin";
-    public static ListView deviceListView;
-    //    public GHCBManage getGHCBManage() {
-//        return gHCBManage;
-//    }
-//
-//    public void setGHCBManage(GHCBManage m) {
-//        this.gHCBManage = m;
-//    }
     private static Gson gson = new Gson();
     public int rly1 = -1;
     public int rly2 = -1;
+    private GHCBManage gHCBManage;
     private RefreshActivity refreshActivity;
     private String IPAddress = "0.0.0.0";
     private int ListViewindex;
@@ -63,7 +55,6 @@ public class GHCB implements RefreshListView, SetViewHolderData {
     private boolean hasRlyInit = false;
     private HashMap<String, Port> ports = new HashMap<>();
     private HashMap<String, List<String>> portTypeNums = new HashMap<>();
-
     public GHCB() {
 
         TempPort t = new TempPort(this);
@@ -78,6 +69,14 @@ public class GHCB implements RefreshListView, SetViewHolderData {
 //        currentTemp = 0;
 //        currentRLY1 = 2;
 //        currentRLY2 = 3;
+    }
+
+    public GHCBManage getGHCBManage() {
+        return gHCBManage;
+    }
+
+    public void setGHCBManage(GHCBManage m) {
+        this.gHCBManage = m;
     }
 
     public RefreshActivity getRefreshActivity() {
@@ -245,6 +244,41 @@ public class GHCB implements RefreshListView, SetViewHolderData {
         }
     }
 
+    public void BoardRename(final String newName) {
+        try {
+            RequestParams requestParams = new RequestParams(APPUser.modifyURL);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("device_id", getDevID());
+            jsonObject.addProperty("alias", newName);
+            requestParams.setBodyContent(jsonObject.toString());
+            MyUtil.setRequestParamsHeader(requestParams);
+            x.http().post(requestParams, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    setDevAlias(newName);
+                    refreshActivity.reName();
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    ex.printStackTrace();
+                }
+
+                @Override
+                public void onCancelled(Callback.CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        } catch (Exception e) {
+
+        }
+    }
+
     public void setFromModel(GHCBModel gm) {
 
         devID = gm.id;
@@ -289,9 +323,9 @@ public class GHCB implements RefreshListView, SetViewHolderData {
 
 //    private int currentRLY1 = 0;
 
-    public void refreshListView() {
+    public void refresh(ListView lv) {
 
-        Refresh.refreshListView(deviceListView, this, ListViewindex);
+        RefreshDataBase.refreshListViewData(lv, this, ListViewindex);
     }
 
 //    private int currentRLY2 = 1;

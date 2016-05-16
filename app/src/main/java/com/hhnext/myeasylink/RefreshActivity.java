@@ -7,4 +7,6 @@ public interface RefreshActivity {
     public void refreshRlyTempListView();
 
     public void refreshPortDescriptionListView();
+
+    public void reName();
 }

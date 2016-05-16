@@ -9,7 +9,7 @@ public class ConnManage {
     private static final String host = "api.easylink.io";
     private static final String port = "1883";
     private static ProtocolParser protocolParser = new ProtocolParser();
-    private Context ctx;
+    private static Context ctx;
 
     public ConnManage(Context paramContext) {
         this.ctx = paramContext;
