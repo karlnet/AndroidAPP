@@ -3,26 +3,51 @@ package com.hhnext.myeasylink;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ListView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.mxchip.mqttservice2.MqttServiceAPI;
 
-public class GHCB {
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class GHCB implements RefreshListView, SetViewHolderData {
+    public final static int inBoardPort = 10;
+    public final static int defaultRly1 = 0;
+    public final static int defaultRly2 = 1;
+    //    private GHCBManage gHCBManage;
     public static final String password = "123456";
     public static final String userName = "admin";
+    public static ListView deviceListView;
+    //    public GHCBManage getGHCBManage() {
+//        return gHCBManage;
+//    }
+//
+//    public void setGHCBManage(GHCBManage m) {
+//        this.gHCBManage = m;
+//    }
+    private static Gson gson = new Gson();
+    public int rly1 = -1;
+    public int rly2 = -1;
+    private RefreshActivity refreshActivity;
     private String IPAddress = "0.0.0.0";
     private int ListViewindex;
     private String MAC;
     private String ROMVersion;
     private String createTime;
+    private String powerOnTime;
     private String description;
     private String devID;
-
-
     private String devAlias;
     private String devToken;
     private Handler handler;
-    private String humidity = "0";
+    //    private String humidity = "0";
     private boolean lamp;
     private MqttServiceAPI mapi;
     private String offlineTime;
@@ -33,17 +58,384 @@ public class GHCB {
     private String serialNo;
     private String ssid;
     private GHCBStatus status = GHCBStatus.offline;
-    private String temperature = "0";
+    //    private String temperature = "0";
     private boolean hasImage = false;
+    private boolean hasRlyInit = false;
+    private HashMap<String, Port> ports = new HashMap<>();
+    private HashMap<String, List<String>> portTypeNums = new HashMap<>();
 
+    public GHCB() {
 
-    private void PublishCommand(String command) {
-        if (this.mapi != null)
-            this.mapi.publishCommand(getInTopic(), command, 0, false);
-        Log.i("orinoco", getInTopic() + ";" + command);
+        TempPort t = new TempPort(this);
+        t.setPort(10);
+        t.setPortModel("temp");
+        t.setPortName("系统");
+
+        AddPort(t);
+
+//        this.AddPort(t);
+
+//        currentTemp = 0;
+//        currentRLY1 = 2;
+//        currentRLY2 = 3;
     }
 
-    private void sendMsgToWindows(int msgID) {
+    public RefreshActivity getRefreshActivity() {
+        return refreshActivity;
+    }
+
+    public void setRefreshActivity(RefreshActivity refreshActivity) {
+        this.refreshActivity = refreshActivity;
+    }
+
+    public void AddOrDelToCloud(final Port port, final boolean create) {
+        try {
+
+            String url;
+
+            if (create) {
+                url = APPUser.MyBoardPortCreateURL;
+            } else {
+                url = APPUser.MyBoardPortRemoveURL;
+            }
+
+
+            RequestParams request = new RequestParams(url);
+            APPUser.setMyRequestParamsHeader(request);
+            request.setBodyContent(gson.toJson(port.getPortBindingModel()));
+            x.http().post(request, new Callback.CommonCallback<String>() {
+                public void onCancelled(CancelledException cex) {
+//                    Log.i("orinoco", "cancel");
+                }
+
+                public void onError(Throwable ex, boolean b) {
+//                    p.countDownLatch.countDown();
+//                    Log.i("orinoco", "error");
+                }
+
+                public void onFinished() {
+                    /*Log.i("orinoco", "finish");*/
+//                    p.countDownLatch.countDown();
+
+                }
+
+                public void onSuccess(String jsonStr) {
+
+                    if (create) {
+
+                        AddPort(port);
+
+                    } else {
+
+                        int no = port.getPort();
+                        DelPort(no);
+
+                    }
+
+                    refreshActivity.refreshRlyTempListView();
+
+                }
+            });
+
+        } catch (Exception e2) {
+
+        }
+    }
+
+    public void getPortsFromCloud() {
+        try {
+
+            RequestParams request = new RequestParams(APPUser.MyBoardPortsURL);
+            APPUser.setMyRequestParamsHeader(request);
+            String str = "{\"mac\":\"" + getMAC() + "\"}";
+//                Log.i("orinoco", "s= " + str);
+            request.setBodyContent(str);
+            x.http().post(request, new Callback.CommonCallback<String>() {
+                public void onCancelled(CancelledException cex) {
+                }
+
+                public void onError(Throwable ex, boolean b) {
+
+                }
+
+                public void onFinished() {
+                }
+
+                public void onSuccess(String jsonStr) {
+                    if (!jsonStr.equals("[]")) {
+                        try {
+                            List<BoardPortsModel> pdList = gson.fromJson(jsonStr, new TypeToken<List<BoardPortsModel>>() {
+                            }.getType());
+
+                            for (BoardPortsModel pd : pdList
+                                    ) {
+
+                                Port p = (Port) Class.forName(pd.getClassType()).newInstance();
+                                p.setGHCB(GHCB.this);
+                                p.setFromPortBindingModel(pd);
+                                AddPort(p);
+                            }
+
+
+                        } catch (Exception e) {
+
+                        }
+                    }
+                    refreshActivity.refreshRlyTempListView();
+                }
+            });
+
+        } catch (Exception e2) {
+
+        }
+    }
+
+    public void getPortDescriptionFromCloud() {
+        try {
+
+
+            Log.i("orinoco", "in new thread");
+            RequestParams request = new RequestParams(APPUser.MyBoardPortDescriptionURL);
+            APPUser.setMyRequestParamsHeader(request);
+//            request.setBodyContent(str);
+            x.http().get(request, new Callback.CommonCallback<String>() {
+                public void onCancelled(CancelledException cex) {
+                }
+
+                public void onError(Throwable ex, boolean b) {
+
+                }
+
+                public void onFinished() {
+
+                }
+
+                public void onSuccess(String jsonStr) {
+
+                    try {
+                        List<PortDescription> pdList = gson.fromJson(jsonStr, new TypeToken<List<PortDescription>>() {
+                        }.getType());
+
+                        for (PortDescription pd : pdList
+                                ) {
+//                            PortDescription p = new PortDescription(
+////                            "rly", "继电器", "com.hhnext.myeasylink.RlyPort", Arrays.asList("pa1a-5v", "pa1a-12v")
+//                    );
+                            pd.setMap();
+                            GHCBManage.PortDescriptions.put(pd.getPortModel(), pd);
+                        }
+
+                        int num = GHCBManage.PortDescriptions.size();
+                        if (num != 0) {
+
+                            refreshActivity.refreshPortDescriptionListView();
+
+//                            portModel.performItemClick(portModel, 0, 0);
+
+                        }
+
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
+
+        } catch (Exception e2) {
+
+        }
+    }
+
+    public void setFromModel(GHCBModel gm) {
+
+        devID = gm.id;
+        serialNo = gm.serial;
+        MAC = gm.bssid;
+        createTime = gm.created;
+        devAlias = gm.alias;
+
+        powerOnTime = gm.power_time;
+        IPAddress = gm.ip;
+        ssid = gm.ssid;
+        onlineTime = gm.online_time;
+        offlineTime = gm.offline_time;
+
+    }
+
+//    private int currentTemp = 9;
+
+    public void setViewHolder(MyBaseAdapter.ViewHolder ViewHolder) {
+
+        DeviceAdapter.DeviceViewHolder viewHolder = (DeviceAdapter.DeviceViewHolder) ViewHolder;
+
+
+        if (inBoardPort != -1) {
+            TempPort p = (TempPort) getPort(String.valueOf(inBoardPort));
+            viewHolder.temperature.setText(String.valueOf(p.getTemperature()));
+            viewHolder.humidity.setText(String.valueOf(p.getHumidity()));
+        }
+
+        if (getRly1() != -1) {
+
+            RlyPort t = (RlyPort) getPort(String.valueOf(getRly1()));
+            viewHolder.rly1.setText(MyUtil.togglgText(t.isRlyState()));
+        }
+        if (getRly2() != -1) {
+            RlyPort t = (RlyPort) getPort(String.valueOf(getRly2()));
+            viewHolder.rly2.setText(MyUtil.togglgText(t.isRlyState()));
+        }
+
+
+    }
+
+//    private int currentRLY1 = 0;
+
+    public void refreshListView() {
+
+        Refresh.refreshListView(deviceListView, this, ListViewindex);
+    }
+
+//    private int currentRLY2 = 1;
+
+    public void AttachToMqTT(boolean connect) {
+
+        if (connect) {
+            ConnManage conn = GHCBManage.getConnManage();
+            conn.startNewConnToGHCB(this);
+        } else if (mapi != null)
+            this.mapi.stopMqttService();
+
+    }
+
+    public int getInBoardTempPort() {
+        return inBoardPort;
+    }
+
+//    private boolean addOrDelResult = false;
+
+    public int getRly1() {
+        return rly1;
+    }
+
+    public int getRly2() {
+        return rly2;
+    }
+
+    public Port getPort(String no) {
+        return ports.get(no);
+    }
+
+    public void DelPort(int no) {
+
+        String noStr = String.valueOf(no);
+
+        Port port = ports.get(noStr);
+
+        if (port != null) {
+
+//            p.countDownLatch = new CountDownLatch(1);
+
+            port.delPortNo(noStr);
+            ports.remove(noStr);
+
+            if (defaultRly1 == no)
+                rly1 = -1;
+
+            if (defaultRly2 == no)
+                rly2 = -1;
+
+//            try {
+//                if (p.countDownLatch.await(10, TimeUnit.SECONDS) && addOrDelResult) {
+//                    p.delPortNo(s);
+//                    ports.remove(s);
+//
+//                    if (defaultRly1 == no)
+//                        rly1 = -1;
+//
+//                    if (defaultRly2 == no)
+//                        rly2 = -1;
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+        }
+    }
+
+    public void AddPort(Port port) {
+
+//        int no = p.getPort();
+//        String noStr = String.valueOf(no);
+
+//        p.countDownLatch = new CountDownLatch(1);
+        int no = port.getPort();
+
+        String noStr = String.valueOf(no);
+
+        ports.put(noStr, port);
+        port.addPortNo(noStr);
+
+        if (defaultRly1 == no)
+            rly1 = defaultRly1;
+
+        if (defaultRly2 == no)
+            rly2 = defaultRly2;
+
+//        try {
+//            if (p.countDownLatch.await(10, TimeUnit.SECONDS)&&addOrDelResult) {
+
+//        ports.put(noStr, p);
+//        p.addPortNo(noStr);
+//
+//        if (defaultRly1 == no)
+//            rly1 = defaultRly1;
+//
+//        if (defaultRly2 == no)
+//            rly2 = defaultRly2;
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public HashMap<String, Port> getPorts() {
+        return ports;
+    }
+
+    public HashMap<String, List<String>> getPortTypeNums() {
+        return portTypeNums;
+    }
+
+    public void setJsonData(UpdateJsonData updateJsonData) {
+        for (UpdateJsonData.Data d : updateJsonData.payload
+                ) {
+            Port p = ports.get(String.valueOf(d.port));
+            if (p != null)
+                p.setUploadData(d);
+        }
+
+
+    }
+
+
+    public void PublishCommand(String command) {
+        Log.i("orinoco", getInTopic() + ";" + command);
+//        if (this.mapi != null) {
+        final String c = command;
+        final MqttServiceAPI m = this.mapi;
+
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+        if (m != null)
+            m.publishCommand(getInTopic(), c, 0, false);
+//                }
+//            }).start();
+
+
+//        }
+
+    }
+
+    public void sendMsgToWindows(int msgID) {
         if (this.handler != null) {
             Message msg = this.handler.obtainMessage(0);
             msg.arg1 = msgID;
@@ -121,16 +513,16 @@ public class GHCB {
         this.handler = paramHandler;
     }
 
-    public String getHumidity() {
-        return this.humidity;
-    }
-
-    public void setHumidity(String value) {
-        if (this.humidity != value) {
-            this.humidity = value;
-            sendMsgToWindows(GHCBAPP.HUMIDITY_CHANGED);
-        }
-    }
+//    public String getHumidity() {
+//        return this.humidity;
+//    }
+//
+//    public void setHumidity(String value) {
+//        if (this.humidity != value) {
+//            this.humidity = value;
+//            sendMsgToWindows(GHCBAPP.HUMIDITY_CHANGED);
+//        }
+//    }
 
     public String getIPAddress() {
 
@@ -171,6 +563,24 @@ public class GHCB {
 
     public void setMapi(MqttServiceAPI paramMqttServiceAPI) {
         this.mapi = paramMqttServiceAPI;
+    }
+
+    public String getPowerOnTime() {
+        return powerOnTime;
+    }
+
+//    public boolean isRlyInit() {
+//
+//        return hasRlyInit;
+//    }
+
+//    public void RlyInit(boolean hasRlyInit) {
+//
+//        this.hasRlyInit = hasRlyInit;
+//    }
+
+    public void setPowerOnTime(String powerOnTime) {
+        this.powerOnTime = powerOnTime;
     }
 
     public String getOfflineTime() {
@@ -238,79 +648,76 @@ public class GHCB {
     }
 
     public void setStatus(GHCBStatus value) {
-        ConnManage conn = GHCBManage.connManage;
-        if (this.status != value) {
-            this.status = value;
-            if (value == GHCBStatus.online) {
-                conn.startNewConnToGHCB(this);
-            } else if (value == GHCBStatus.offline) {
-                conn.stopConnToGHCB(this);
-            }
+        this.status = value;
+        if (value == GHCBStatus.online) {
+            AttachToMqTT(true);
+
         }
-    }
-
-    public String getTemperature() {
-        return this.temperature;
-    }
-
-    public void setTemperature(String value) {
-        if (this.temperature != value) {
-            this.temperature = value;
-            sendMsgToWindows(GHCBAPP.TEMPERATURE_CHANGED);
-        }
-    }
-
-    public boolean isLamp() {
-        return this.lamp;
-    }
-
-    public void setLamp(boolean value) {
-        if (this.lamp != value) {
-            this.lamp = value;
-            sendMsgToWindows(GHCBAPP.LAMP_CHANGED);
-        }
-    }
-
-    public boolean isPump() {
-        return this.pump;
-    }
-
-    public void setPump(boolean value) {
-        if (this.pump != value) {
-            this.pump = value;
-            sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
-        }
-    }
-
-    public void lampOFF() {
-        lampSwitch(false);
-    }
-
-    public void lampON() {
-        lampSwitch(true);
-    }
-
-    public void pumpOFF() {
-        pumpSwitch(false);
-    }
-
-    public void pumpON() {
-        pumpSwitch(true);
-    }
-
-    private void lampSwitch(boolean flag) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("lamp_switch", flag);
-        PublishCommand(jsonObject.toString());
 
     }
 
-    private void pumpSwitch(boolean flag) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("pump_switch", flag);
-        PublishCommand(jsonObject.toString());
+//    public String getTemperature() {
+//        return this.temperature;
+//    }
+//
+//    public void setTemperature(String value) {
+//        if (this.temperature != value) {
+//            this.temperature = value;
+//            sendMsgToWindows(GHCBAPP.TEMPERATURE_CHANGED);
+//        }
+//    }
 
-    }
+//    public boolean isLamp() {
+//        return this.lamp;
+//    }
+//
+//    public void setLamp(boolean value) {
+//        if (this.lamp != value) {
+//            this.lamp = value;
+//            sendMsgToWindows(GHCBAPP.LAMP_CHANGED);
+//        }
+//    }
+//
+//    public boolean isPump() {
+//        return this.pump;
+//    }
+//
+//    public void setPump(boolean value) {
+//        if (this.pump != value) {
+//            this.pump = value;
+//            sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
+//        }
+//    }
+
+//    public void lampOFF() {
+//        lampSwitch(false);
+//    }
+//
+//    public void lampON() {
+//        lampSwitch(true);
+//    }
+//
+//    public void pumpOFF() {
+//        pumpSwitch(false);
+//    }
+//
+//    public void pumpON() {
+//        pumpSwitch(true);
+//    }
+//
+//    private void lampSwitch(boolean flag) {
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("lamp_switch", flag);
+//        PublishCommand(jsonObject.toString());
+//
+//    }
+//
+//    private void pumpSwitch(boolean flag) {
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("pump_switch", flag);
+//        PublishCommand(jsonObject.toString());
+//        String jsonString = "{  \"hasImage\": \"true\"}";
+//    }
 
     public void getGHCBStatus() {
         JsonObject jsonObject = new JsonObject();
@@ -324,5 +731,6 @@ public class GHCB {
     }
 
     public static enum GHCBStatus {online, offline, activated, unactivated}
+
 
 }

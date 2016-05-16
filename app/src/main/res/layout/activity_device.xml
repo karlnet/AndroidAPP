@@ -46,96 +46,17 @@
                 android:orientation="vertical" />
         </LinearLayout>
 
-        <LinearLayout
+
+        <ListView
+            android:id="@+id/tempListView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20.0dip"
-            android:orientation="horizontal" />
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="温度："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:id="@+id/temperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="temp"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="湿度："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:id="@+id/humidity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="Humi"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-        </LinearLayout>
+            android:layout_marginTop="10.0dip" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="照明："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:id="@+id/lamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="lamp"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="水泵："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <TextView
-                android:id="@+id/pump"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="pump"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10.0dip"
+            android:layout_marginTop="0.0dip"
             android:orientation="horizontal">
 
             <TextView
@@ -144,47 +65,16 @@
                 android:background="@color/colorline" />
         </LinearLayout>
 
-        <LinearLayout
+        <ListView
+            android:id="@+id/rlyListView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10.0dip"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="照明："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <ToggleButton
-                android:id="@+id/toggleLamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="照明" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:text="水泵："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
-
-            <ToggleButton
-                android:id="@+id/togglePump"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:text="水泵" />
-        </LinearLayout>
+            android:layout_marginTop="5.0dip" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10.0dip"
+            android:layout_marginTop="5.0dip"
             android:orientation="horizontal">
 
             <TextView

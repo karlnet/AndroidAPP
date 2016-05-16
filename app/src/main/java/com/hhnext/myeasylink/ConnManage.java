@@ -17,20 +17,26 @@ public class ConnManage {
 
     public void startNewConnToGHCB(final GHCB theGHCB) {
         MqttServiceAPI localMqttServiceAPI = new MqttServiceAPI(this.ctx);
-        theGHCB.setMapi(localMqttServiceAPI);
-        localMqttServiceAPI.startMqttService("api.easylink.io", "1883", APPUser.userName, APPUser.userPassword, theGHCB.getClientID(), theGHCB.getOutTopic(), new MqttServiceListener() {
+
+        localMqttServiceAPI.startMqttService("api.easylink.io", "1883", APPUser.UserName, APPUser.UserPassword, theGHCB.getClientID(), theGHCB.getOutTopic(), new MqttServiceListener() {
 
             @Override
             public void onMqttReceiver(String s, String s1) {
                 if (s.equals("payload"))
                     ConnManage.protocolParser.Parse(theGHCB, s1);
+//                else if(s.equals("status")) {
+//                    Log.i("orinoco", "status :" + s+" context: "+s1);
+//                    if (s1.equals("Connected "))
+//                        theGHCB.getGHCBStatus();
+//                }
             }
 
-
         });
+
+        theGHCB.setMapi(localMqttServiceAPI);
     }
 
-    public void stopConnToGHCB(GHCB paramGHCB) {
-        paramGHCB.getMapi().stopMqttService();
-    }
+//    public void stopConnToGHCB(GHCB paramGHCB) {
+//        paramGHCB.getMapi().stopMqttService();
+//    }
 }

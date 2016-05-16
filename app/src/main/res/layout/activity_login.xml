@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/textView01"
         android:layout_toRightOf="@id/textView01"
-        android:text="13701308059@vip.163.com"
+        android:text="13241695515"
         android:textSize="16.0dip" />
 
     <TextView

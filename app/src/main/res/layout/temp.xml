@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10.0dip"
+        android:layout_marginTop="10.0dip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tempName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="系统："
+            android:textSize="20.0dip"
+            android:textStyle="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="温度："
+            android:textSize="20.0dip"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tempTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:text="temp"
+            android:textSize="20.0dip"
+            android:textStyle="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="湿度："
+            android:textSize="20.0dip"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tempHumi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:text="Humi"
+            android:textSize="20.0dip"
+            android:textStyle="normal" />
+
+        <ImageButton
+
+            android:id="@+id/tempDelete"
+
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0.25"
+            android:background="#ffffff"
+            android:src="@drawable/delete" />
+
+    </LinearLayout>
+
+</LinearLayout>

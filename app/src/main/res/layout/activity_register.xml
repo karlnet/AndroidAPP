@@ -119,6 +119,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textView15"
         android:layout_marginTop="30.0dip"
-        android:text="确认"
+        android:text="注册新用户"
         android:textSize="20.0dip" />
 </RelativeLayout>

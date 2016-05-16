@@ -11,4 +11,9 @@
         android:icon="@drawable/search"
         android:title="@string/app_easylink"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_binding"
+        android:icon="@drawable/binding2"
+        android:title="@string/app_binding"
+        app:showAsAction="always" />
 </menu>

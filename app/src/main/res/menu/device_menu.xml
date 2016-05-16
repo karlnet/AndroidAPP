@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_port_del"
+        android:icon="@drawable/delete"
+        android:title="@string/port_del"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_port_add"
+        android:icon="@drawable/common_full_open_on_phone"
+        android:title="@string/port_add"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/action_rename"
         android:icon="@drawable/pencil3"
-        android:title="@string/app_setting"
+        android:title="@string/app_rename"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_authorize"
         android:icon="@drawable/user5"
-        android:title="@string/app_easylink"
+        android:title="@string/app_user_authorize"
         app:showAsAction="always" />
 </menu>

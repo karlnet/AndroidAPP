@@ -85,7 +85,7 @@ public class MyUtil {
 
     public static void setRequestParamsHeader(RequestParams requestParamsHeader) {
         requestParamsHeader.addHeader("content-type", "application/json");
-        requestParamsHeader.addHeader("X-Application-Id", "6a3d6800-1b07-4fc5-86ca-12bba8f8dc67");
+        requestParamsHeader.addHeader("X-Application-Id", APPUser.APPID);
         requestParamsHeader.addHeader("X-Request-Sign", APPUser.getRequestSign());
         requestParamsHeader.addHeader("Authorization", APPUser.getRequestAuthorization());
     }

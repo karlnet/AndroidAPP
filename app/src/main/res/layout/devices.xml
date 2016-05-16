@@ -14,6 +14,7 @@
         android:layout_marginTop="5.0dip"
         android:src="@drawable/gh" />
 
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -30,82 +31,124 @@
             android:textSize="20.0dip"
             android:textStyle="normal" />
 
+
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:id="@+id/linerlayout2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2.0"
+            android:layout_weight="0.5"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="温度："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom">
 
-            <TextView
-                android:id="@+id/deviceTemperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="tempe"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+                <TextView
+                    android:id="@+id/deviceText1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="温度："
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="湿度："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+                <TextView
+                    android:id="@+id/deviceTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/deviceText1"
+                    android:layout_toRightOf="@id/deviceText1"
+                    android:text="lamp"
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
 
-            <TextView
-                android:id="@+id/deviceHumidity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="Humidity"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/deviceHumidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/deviceText1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:text="0.0"
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/deviceText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/deviceText1"
+
+
+                    android:layout_toLeftOf="@id/deviceHumidity"
+                    android:text="湿度："
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
+
+
+            </RelativeLayout>
         </LinearLayout>
 
+
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2.0"
+            android:layout_gravity="bottom"
+
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="照明："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom">
 
-            <TextView
-                android:id="@+id/deviceLamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="lamp"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+                <TextView
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="水泵："
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+                    android:id="@+id/rly1Description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="照明："
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
 
-            <TextView
-                android:id="@+id/devicePump"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="pump"
-                android:textSize="20.0dip"
-                android:textStyle="normal" />
+                <TextView
+                    android:id="@+id/deviceLamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/rly1Description"
+                    android:layout_toRightOf="@id/rly1Description"
+
+
+                    android:text="lllamp"
+                    android:textSize="20.0dip"
+
+                    android:textStyle="normal" />
+
+
+                <TextView
+                    android:id="@+id/devicePump"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/rly1Description"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="28.5dp"
+                    android:text="关"
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/rly2Description"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/rly1Description"
+                    android:layout_toLeftOf="@id/devicePump"
+                    android:text="水泵："
+                    android:textSize="20.0dip"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

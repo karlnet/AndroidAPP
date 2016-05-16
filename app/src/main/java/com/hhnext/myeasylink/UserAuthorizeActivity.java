@@ -75,7 +75,7 @@ public class UserAuthorizeActivity extends AppCompatActivity {
                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    RequestParams requestParams = new RequestParams(GHCBManage.authorizeURL);
+                                    RequestParams requestParams = new RequestParams(APPUser.authorizeURL);
                                     JsonObject jsonObject = new JsonObject();
                                     jsonObject.addProperty("device_id", mGHCB.getDevID());
                                     jsonObject.addProperty("owner_type", "Share");
@@ -168,7 +168,7 @@ public class UserAuthorizeActivity extends AppCompatActivity {
 
     public void scanUsers() {
 //        Log.i("orinoco", "start scan");
-        RequestParams requestParams = new RequestParams(GHCBManage.userQueryURL);
+        RequestParams requestParams = new RequestParams(APPUser.userQueryURL);
         requestParams.setBodyContent("{\"device_id\":\"" + mGHCB.getDevID() + "\"}");
         MyUtil.setRequestParamsHeader(requestParams);
         x.http().post(requestParams, new Callback.CommonCallback<String>() {
@@ -180,6 +180,7 @@ public class UserAuthorizeActivity extends AppCompatActivity {
             }
 
             public void onFinished() {
+
             }
 
             public void onSuccess(String jsonString) {

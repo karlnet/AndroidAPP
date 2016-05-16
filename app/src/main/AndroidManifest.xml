@@ -51,7 +51,8 @@
 
         <activity
             android:name=".UserAuthorizeActivity"
-            android:label="@string/title_activity_user_authorize"></activity>
+            android:label="@string/title_activity_user_authorize" />
+        <activity android:name=".BindingActivity"></activity>
     </application>
 
 </manifest>

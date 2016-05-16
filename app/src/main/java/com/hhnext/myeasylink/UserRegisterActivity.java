@@ -26,34 +26,50 @@ public class UserRegisterActivity extends AppCompatActivity {
     private Button smsButton;
     private TextView smsCode;
 
+//    private final static String resetPasswordUrl = "http://easylink.io/v2/users/password/reset";
+//    private final static String registerUserUrl = "http://easylink.io/v2/users";
+//    private final static String getSMSVerificationUrl = "http://easylink.io/v2/users/sms_verification_code";
+//    private final static String myAddUserUrl="";
+//    private final static String myResetPasswordUrl="";
+
+    private String submitURL = APPUser.RegisterURL;
+    private String mySubmitURL = APPUser.MyAddUserURL;
+
+
     private void initComponent() {
 
         ActionBar localActionBar = getSupportActionBar();
         if (localActionBar != null)
             localActionBar.setDisplayHomeAsUpEnabled(true);
 
-        this.msgText = ((TextView) findViewById(R.id.msgTextR));
-        this.msgText.setVisibility(View.GONE);
-        this.smsCode = ((TextView) findViewById(R.id.verificationNumber));
-        this.smsCode.setOnClickListener(new View.OnClickListener() {
+        Intent intent = getIntent();
+        final int urlSource = intent.getIntExtra("urlSource", 0);
+        if (urlSource == 1) {
+            submitURL = APPUser.ResetPasswordURL;
+            mySubmitURL = APPUser.MyResetPasswordURL;
+        }
+        msgText = ((TextView) findViewById(R.id.msgTextR));
+        msgText.setVisibility(View.GONE);
+        smsCode = ((TextView) findViewById(R.id.verificationNumber));
+        smsCode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                UserRegisterActivity.this.msgText.setVisibility(View.GONE);
+                msgText.setVisibility(View.GONE);
             }
         });
-        this.mobileNumber = ((TextView) findViewById(R.id.mobileNumberRegister));
-        this.mobileNumber.setOnClickListener(new View.OnClickListener() {
+        mobileNumber = ((TextView) findViewById(R.id.mobileNumberRegister));
+        mobileNumber.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                UserRegisterActivity.this.msgText.setVisibility(View.GONE);
+                msgText.setVisibility(View.GONE);
             }
         });
-        this.password = ((TextView) findViewById(R.id.newPassword));
-        this.smsButton = ((Button) findViewById(R.id.smsButton));
-        this.smsButton.setOnClickListener(new View.OnClickListener() {
+        password = ((TextView) findViewById(R.id.newPassword));
+        smsButton = ((Button) findViewById(R.id.smsButton));
+        smsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
-                RequestParams localRequestParams = new RequestParams("http://easylink.io/v2/users");
+                RequestParams localRequestParams = new RequestParams(APPUser.SMSVerificationURL);
                 localRequestParams.addHeader("content-type", "application/json");
                 MyUtil.setRequestParamsHeader(localRequestParams);
-                String str = "{\"username\":\"" + UserRegisterActivity.this.mobileNumber.getText().toString() + "\"}";
+                String str = "{\"username\":\"" + mobileNumber.getText().toString() + "\"}";
                 Log.i("orinoco", "username= " + str);
                 localRequestParams.setBodyContent(str);
                 x.http().post(localRequestParams, new CommonCallback<String>() {
@@ -62,51 +78,95 @@ public class UserRegisterActivity extends AppCompatActivity {
 
                     public void onError(Throwable paramAnonymous2Throwable, boolean paramAnonymous2Boolean) {
                         Log.i("orinoco", "login reponse:" + paramAnonymous2Throwable.toString());
-                        UserRegisterActivity.this.msgText.setText("短信服务器错误，请重新输入手机号码：");
-                        UserRegisterActivity.this.msgText.setTextColor(Color.RED);
-                        UserRegisterActivity.this.msgText.setVisibility(View.VISIBLE);
+                        msgText.setText("短信服务器错误，请重新输入手机号码：");
+                        msgText.setTextColor(Color.RED);
+                        msgText.setVisibility(View.VISIBLE);
                     }
 
                     public void onFinished() {
                     }
 
-                    public void onSuccess(String paramAnonymous2String) {
-                        if (((JsonObject) new JsonParser().parse(paramAnonymous2String)).get("result").getAsString().equals("success"))
-                            UserRegisterActivity.this.loginButton.setEnabled(false);
+                    public void onSuccess(String res) {
+                        if (((JsonObject) new JsonParser().parse(res)).get("result").getAsString().equals("success"))
+                            loginButton.setEnabled(true);
                     }
                 });
             }
         });
-        this.loginButton = ((Button) findViewById(R.id.RegisterButton));
-        this.loginButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
-                RequestParams localRequestParams = new RequestParams("http://easylink.io/v2/users");
-                localRequestParams.addHeader("content-type", "application/json");
+        loginButton = ((Button) findViewById(R.id.RegisterButton));
+        if (urlSource == 1)
+            loginButton.setText("重置密码");
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+//                RequestParams localRequestParams = new RequestParams(submitURL);
+////                localRequestParams.addHeader("content-type", "application/json");
+//                MyUtil.setRequestParamsHeader(localRequestParams);
+//                String str = "{\"username\":\"" + mobileNumber.getText().toString() + "\"," + "\"verification_code\":\"" + smsCode.getText().toString() + "\"," + "\"password\":\"" + password.getText().toString() + "\"}";
+//                Log.i("orinoco", "s= " + str);
+//                localRequestParams.setBodyContent(str);
+//                x.http().post(localRequestParams, new CommonCallback<String>() {
+//                    public void onCancelled(CancelledException paramAnonymous2CancelledException) {
+//                    }
+//
+//
+//                    public void onError(Throwable paramAnonymous2Throwable, boolean paramAnonymous2Boolean) {
+//                        Log.i("orinoco", "login reponse:" + paramAnonymous2Throwable.toString());
+////                        JsonObject   jsonObject = (JsonObject) new JsonParser().parse(paramAnonymous2Throwable.getMessage());
+////        if (jsonObject.has("payload")) {
+//                       msgText.setText(paramAnonymous2Throwable.getMessage());
+//                       msgText.setTextColor(Color.RED);
+//                       msgText.setVisibility(View.VISIBLE);
+//                    }
+//
+//                    public void onFinished() {
+//                    }
+//
+//                    public void onSuccess(String result) {
+//                        JsonObject jsonObject = (JsonObject) new JsonParser().parse(result);
+//                        APPUser.UserToken = jsonObject.get("token").getAsString();
+//                        APPUser.UserID = jsonObject.get("user_id").getAsString();
+
+                RequestParams localRequestParams = new RequestParams(mySubmitURL);
                 MyUtil.setRequestParamsHeader(localRequestParams);
-                String str = "{\"username\":\"" + UserRegisterActivity.this.mobileNumber.getText().toString() + "\"," + "\"verification_code\":\"" + UserRegisterActivity.this.smsCode.getText().toString() + "\"," + "\"password\":\"" + UserRegisterActivity.this.password.getText().toString() + "\"}";
+                String str = "{\"username\":\"" + mobileNumber.getText().toString() + "\"," + "\"verification_code\":\"" + smsCode.getText().toString() + "\"," + "\"password\":\"" + password.getText().toString() + "\"}";
+//                String str = "{\"username\":\"" + mobileNumber.getText().toString() + "\"," + "\"password\":\"" + password.getText().toString() + "\"}";
                 Log.i("orinoco", "s= " + str);
                 localRequestParams.setBodyContent(str);
                 x.http().post(localRequestParams, new CommonCallback<String>() {
-                    public void onCancelled(CancelledException paramAnonymous2CancelledException) {
+                    @Override
+                    public void onSuccess(String result) {
+
+                        if (result != null) {
+                            JsonObject jsonObject = (JsonObject) new JsonParser().parse(result);
+                            APPUser.MyUserToken = jsonObject.get("user_token").getAsString();
+                            APPUser.UserToken = jsonObject.get("fog_user_token").getAsString();
+                            APPUser.UserID = jsonObject.get("fog_user_id").getAsString();
+                            startActivity(new Intent(UserRegisterActivity.this, DevicesActivity.class));
+                        }
                     }
 
-                    public void onError(Throwable paramAnonymous2Throwable, boolean paramAnonymous2Boolean) {
-                        Log.i("orinoco", "login reponse:" + paramAnonymous2Throwable.toString());
-                        UserRegisterActivity.this.msgText.setText("验证码错误，请重新输入：");
-                        UserRegisterActivity.this.msgText.setTextColor(Color.RED);
-                        UserRegisterActivity.this.msgText.setVisibility(View.VISIBLE);
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+
+                        msgText.setText(ex.getMessage());
+                        msgText.setTextColor(Color.RED);
+                        msgText.setVisibility(View.VISIBLE);
                     }
 
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+
+                    }
+
+                    @Override
                     public void onFinished() {
-                    }
 
-                    public void onSuccess(String paramAnonymous2String) {
-                        JsonObject localJsonObject = (JsonObject) new JsonParser().parse(paramAnonymous2String);
-                        APPUser.userToken = localJsonObject.get("user_token").getAsString();
-                        APPUser.userID = localJsonObject.get("user_id").getAsString();
-                        UserRegisterActivity.this.startActivity(new Intent(UserRegisterActivity.this, DevicesActivity.class));
                     }
                 });
+
+//
+//                    }
+//                });
             }
         });
     }
