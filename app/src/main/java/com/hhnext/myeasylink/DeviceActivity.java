@@ -126,6 +126,22 @@ public class DeviceActivity extends AppCompatActivity implements RefreshActivity
                         {
                             add("0");
                             add("1");
+                            add("2");
+                            add("3");
+                            add("4");
+                            add("5");
+                            add("6");
+                            add("7");
+                            add("8");
+
+                        }
+                    });
+                    tmpArrayList.remove("1");
+                } else {
+
+                    tmpArrayList.removeAll(new HashSet<String>() {
+                        {
+                            add("9");
 
                         }
                     });
@@ -195,9 +211,9 @@ public class DeviceActivity extends AppCompatActivity implements RefreshActivity
         alertDialog = builder.create();
 
         tempListView = ((ListView) findViewById(R.id.tempListView));
-//        TempPort.tempListView = tempListView;
+        TempPort.tempListView = tempListView;
         rlyListView = ((ListView) findViewById(R.id.rlyListView));
-//        RlyPort.rlyListView = rlyListView;
+        RlyPort.rlyListView = rlyListView;
 
         actionBar = getSupportActionBar();
 
@@ -212,8 +228,8 @@ public class DeviceActivity extends AppCompatActivity implements RefreshActivity
         GHCB g = (GHCB) msg.obj;
 
         Port port = g.getPort(String.valueOf(msgID));
-        port.refresh(tempListView);
-        port.refresh(rlyListView);
+        port.refresh();
+
 
     }
 
@@ -223,35 +239,38 @@ public class DeviceActivity extends AppCompatActivity implements RefreshActivity
 
 
         mGHCB = GHCBAPP.CURRENTGHCB;
-//        GHCBManage.setGHCBManage(this);
+
         mGHCB.setRefreshActivity(this);
 
         initComponent();
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+        GHCBManage.setContext(null);
+        this.mGHCB.setHandler(null);
+        if (mGHCB.getStatus() == GHCB.GHCBStatus.online)
+            mGHCB.AttachToMqTT(false);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        GHCBManage.setContext(this);
 
         if (mGHCB.getPorts().size() == 1) {
             mGHCB.getPortsFromCloud();
 
         } else {
-
             refreshRlyTempListView();
         }
-    }
 
-    protected void onPause() {
-        super.onPause();
-//        if (mGHCB.getStatus() == GHCB.GHCBStatus.online)
-//            mGHCB.AttachToMqTT(false);
-        this.mGHCB.setHandler(null);
-    }
-
-    protected void onResume() {
-        super.onResume();
-
-//        refresUI();
-//        GHCBManage.setCtx(DeviceActivity.this);
-//        if (mGHCB.getStatus() == GHCB.GHCBStatus.online)
-//            mGHCB.AttachToMqTT(true);
-        this.mGHCB.setHandler(this.handler);
     }
 
     @Override
@@ -355,6 +374,10 @@ public class DeviceActivity extends AppCompatActivity implements RefreshActivity
         } else {
             tempAdapter.notifyDataSetChanged();
         }
+
+        this.mGHCB.setHandler(this.handler);
+        if (mGHCB.getStatus() == GHCB.GHCBStatus.online)
+            mGHCB.AttachToMqTT(true);
     }
 
     public void refreshPortDescriptionListView() {

@@ -1,5 +1,7 @@
 package com.hhnext.myeasylink;
 
+import android.widget.ListView;
+
 import com.google.gson.JsonObject;
 
 /**
@@ -9,7 +11,7 @@ public class RlyPort extends Port {
 
 //    public  List<String> rlyArray = new ArrayList<>();
 
-//    public static ListView rlyListView;
+    public static ListView rlyListView;
 
     private boolean rlyState;
 
@@ -27,10 +29,10 @@ public class RlyPort extends Port {
 
     }
 
-//    @Override
-//    public ListView getListView() {
-//        return rlyListView;
-//    }
+    @Override
+    public ListView getListView() {
+        return rlyListView;
+    }
 
     @Override
     public void addPortNo(String no) {

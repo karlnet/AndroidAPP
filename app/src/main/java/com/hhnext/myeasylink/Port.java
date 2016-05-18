@@ -104,20 +104,20 @@ public class Port implements RefreshData, SetViewHolderData {
     public void delPortNo(String no) {
     }
 
-//    public ListView getListView() {
-//        return null;
-//    }
-//
-//    public void setListView(ListView listView) {
-//    }
+    public ListView getListView() {
+        return null;
+    }
+
+    public void setListView(ListView listView) {
+    }
 
     public void setViewHolder(MyBaseAdapter.ViewHolder viewHolder) {
 
     }
 
-    public void refresh(ListView lv) {
+    public void refresh() {
 
-        RefreshDataBase.refreshListViewData(lv, this, listViewIndex);
+        RefreshDataBase.refreshListViewData(getListView(), this, listViewIndex);
     }
 
 

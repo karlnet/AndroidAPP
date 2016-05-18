@@ -1,5 +1,7 @@
 package com.hhnext.myeasylink;
 
+import android.widget.ListView;
+
 /**
  * Created by Administrator on 2016/5/4.
  */
@@ -7,7 +9,7 @@ public class TempPort extends Port {
 
 //    public  List<String> tempArray = new ArrayList<>();
 
-//    public static ListView tempListView;
+    public static ListView tempListView;
 
 
     private float temperature;
@@ -37,10 +39,10 @@ public class TempPort extends Port {
 //        this.humidity = humidity;
 //    }
 
-//    @Override
-//    public ListView getListView() {
-//        return tempListView;
-//    }
+    @Override
+    public ListView getListView() {
+        return tempListView;
+    }
 
 //    @Override
 //    public  void setListView(ListView tempListView) {

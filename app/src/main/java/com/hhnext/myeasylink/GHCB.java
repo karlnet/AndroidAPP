@@ -23,6 +23,7 @@ public class GHCB implements RefreshData, SetViewHolderData {
     public final static int defaultRly2 = 1;
     public static final String password = "123456";
     public static final String userName = "admin";
+    public static ListView deviceListView;
     private static Gson gson = new Gson();
     public int rly1 = -1;
     public int rly2 = -1;
@@ -39,6 +40,7 @@ public class GHCB implements RefreshData, SetViewHolderData {
     private String devAlias;
     private String devToken;
     private Handler handler;
+    private Handler MQThreadHandler;
     //    private String humidity = "0";
     private boolean lamp;
     private MqttServiceAPI mapi;
@@ -53,8 +55,11 @@ public class GHCB implements RefreshData, SetViewHolderData {
     //    private String temperature = "0";
     private boolean hasImage = false;
     private boolean hasRlyInit = false;
+    private boolean connect = false;
+
     private HashMap<String, Port> ports = new HashMap<>();
     private HashMap<String, List<String>> portTypeNums = new HashMap<>();
+
     public GHCB() {
 
         TempPort t = new TempPort(this);
@@ -323,21 +328,23 @@ public class GHCB implements RefreshData, SetViewHolderData {
 
 //    private int currentRLY1 = 0;
 
-    public void refresh(ListView lv) {
+    public void refresh() {
 
-        RefreshDataBase.refreshListViewData(lv, this, ListViewindex);
+        RefreshDataBase.refreshListViewData(deviceListView, this, ListViewindex);
     }
 
 //    private int currentRLY2 = 1;
 
     public void AttachToMqTT(boolean connect) {
+        ConnManage conn = GHCBManage.getConnManage();
+        this.connect = connect;
 
         if (connect) {
-            ConnManage conn = GHCBManage.getConnManage();
             conn.startNewConnToGHCB(this);
-        } else if (mapi != null)
-            this.mapi.stopMqttService();
-
+        } else if (mapi != null) {
+//            this.mapi.stopMqttService();
+            conn.stopConnToGHCB(this);
+        }
     }
 
     public int getInBoardTempPort() {
@@ -492,7 +499,6 @@ public class GHCB implements RefreshData, SetViewHolderData {
 
     public void setHasImage(boolean value) {
 
-
         this.hasImage = value;
         if (hasImage)
             sendMsgToWindows(GHCBAPP.HASIMAGE_CHANGED);
@@ -547,16 +553,13 @@ public class GHCB implements RefreshData, SetViewHolderData {
         this.handler = paramHandler;
     }
 
-//    public String getHumidity() {
-//        return this.humidity;
-//    }
-//
-//    public void setHumidity(String value) {
-//        if (this.humidity != value) {
-//            this.humidity = value;
-//            sendMsgToWindows(GHCBAPP.HUMIDITY_CHANGED);
-//        }
-//    }
+    public Handler getMQThreadHandler() {
+        return MQThreadHandler;
+    }
+
+    public void setMQThreadHandler(Handler MQThreadHandler) {
+        this.MQThreadHandler = MQThreadHandler;
+    }
 
     public String getIPAddress() {
 
@@ -608,13 +611,16 @@ public class GHCB implements RefreshData, SetViewHolderData {
 //        return hasRlyInit;
 //    }
 
-//    public void RlyInit(boolean hasRlyInit) {
+    public void setPowerOnTime(String powerOnTime) {
+        this.powerOnTime = powerOnTime;
+    }
+
+    //    public void RlyInit(boolean hasRlyInit) {
 //
 //        this.hasRlyInit = hasRlyInit;
 //    }
-
-    public void setPowerOnTime(String powerOnTime) {
-        this.powerOnTime = powerOnTime;
+    public boolean isConnect() {
+        return connect;
     }
 
     public String getOfflineTime() {
@@ -683,75 +689,10 @@ public class GHCB implements RefreshData, SetViewHolderData {
 
     public void setStatus(GHCBStatus value) {
         this.status = value;
-        if (value == GHCBStatus.online) {
-            AttachToMqTT(true);
-
-        }
-
+//        if (value == GHCBStatus.online) {
+//            AttachToMqTT(true);
+//        }
     }
-
-//    public String getTemperature() {
-//        return this.temperature;
-//    }
-//
-//    public void setTemperature(String value) {
-//        if (this.temperature != value) {
-//            this.temperature = value;
-//            sendMsgToWindows(GHCBAPP.TEMPERATURE_CHANGED);
-//        }
-//    }
-
-//    public boolean isLamp() {
-//        return this.lamp;
-//    }
-//
-//    public void setLamp(boolean value) {
-//        if (this.lamp != value) {
-//            this.lamp = value;
-//            sendMsgToWindows(GHCBAPP.LAMP_CHANGED);
-//        }
-//    }
-//
-//    public boolean isPump() {
-//        return this.pump;
-//    }
-//
-//    public void setPump(boolean value) {
-//        if (this.pump != value) {
-//            this.pump = value;
-//            sendMsgToWindows(GHCBAPP.PUMP_CHANGED);
-//        }
-//    }
-
-//    public void lampOFF() {
-//        lampSwitch(false);
-//    }
-//
-//    public void lampON() {
-//        lampSwitch(true);
-//    }
-//
-//    public void pumpOFF() {
-//        pumpSwitch(false);
-//    }
-//
-//    public void pumpON() {
-//        pumpSwitch(true);
-//    }
-//
-//    private void lampSwitch(boolean flag) {
-//        JsonObject jsonObject = new JsonObject();
-//        jsonObject.addProperty("lamp_switch", flag);
-//        PublishCommand(jsonObject.toString());
-//
-//    }
-//
-//    private void pumpSwitch(boolean flag) {
-//        JsonObject jsonObject = new JsonObject();
-//        jsonObject.addProperty("pump_switch", flag);
-//        PublishCommand(jsonObject.toString());
-//        String jsonString = "{  \"hasImage\": \"true\"}";
-//    }
 
     public void getGHCBStatus() {
         JsonObject jsonObject = new JsonObject();

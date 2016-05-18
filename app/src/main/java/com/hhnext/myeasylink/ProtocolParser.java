@@ -1,5 +1,7 @@
 package com.hhnext.myeasylink;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 public class ProtocolParser {
@@ -9,7 +11,7 @@ public class ProtocolParser {
 
     public void Parse(GHCB theGHCB, String jsonString) {
 
-
+        Log.i("orinoco", jsonString);
         UpdateJsonData r = gson.fromJson(jsonString, UpdateJsonData.class);
         theGHCB.setJsonData(r);
 //        jsonObject = (JsonObject) new JsonParser().parse(jsonString);
@@ -43,7 +45,7 @@ public class ProtocolParser {
 //
 //            if (jsonObject.has("ip_address"))
 //                theGHCB.setIPAddress(jsonObject.get("ip_address").getAsString());
-        }
     }
+}
 
 

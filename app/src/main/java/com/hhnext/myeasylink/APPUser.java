@@ -36,7 +36,8 @@ public class APPUser
     public static final String userQueryURL = BaseURL + "v1/device/user/query";
 
 
-    public final static String MyBaseURL = "http://192.168.1.119:57793/";
+    public final static String MyBaseURL = "http://192.168.2.52:57793/";
+    //    public final static String MyBaseURL = "http://192.168.1.135:57793/";
     public final static String MyAddUserURL = MyBaseURL + "api/accounts/create";
     public final static String MyResetPasswordURL = MyBaseURL + "api/accounts/reset";
     public final static String MyLoginURL = MyBaseURL + "api/accounts/login";

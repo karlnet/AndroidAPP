@@ -21,15 +21,15 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
 
 
     private void initComponent() {
-        this.handler = new myHandler();
+        handler = new myHandler();
 
-        this.listView = ((ListView) findViewById(R.id.devicesListView));
-//        GHCB.deviceListView = lv;
+        listView = ((ListView) findViewById(R.id.devicesListView));
+        GHCB.deviceListView = listView;
 //        mGHCBList = (GHCB[]) GHCBManage.GHCBs.values().toArray(new GHCB[0]);
 //        myAdapter = new DeviceAdapter(DevicesActivity.this, mGHCBList);
 //        lv.setAdapter(myAdapter);
 
-        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DeviceAdapter.DeviceViewHolder dv = (DeviceAdapter.DeviceViewHolder) view.getTag();
@@ -54,7 +54,7 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
         if (msgID != m.getRly1() && msgID != m.getRly2() && msgID != m.getInBoardTempPort())
             return;
 
-        m.refresh(listView);
+        m.refresh();
 
         if (msgID == GHCBAPP.ALL_CHANGED) {
             this.myAdapter.notifyDataSetChanged();
@@ -72,9 +72,7 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
-                Intent localIntent = new Intent(this, LoginActivity.class);
-                localIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(localIntent);
+                finish();
                 return true;
             case R.id.action_easylink:
                 startActivity(new Intent(this, MainActivity.class));
@@ -94,9 +92,25 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
         setContentView(R.layout.activity_devices);
         initComponent();
 
-//        mGHCBManage=new GHCBManage();
-        GHCBManage.setContext(this);
         GHCBManage.setRefreshActivity(this);
+    }
+
+    protected void onPause() {
+        super.onPause();
+        GHCBManage.setContext(null);
+        for (GHCB localGHCB : GHCBManage.GHCBs.values()) {
+            if (localGHCB.getStatus() == GHCB.GHCBStatus.online) {
+                localGHCB.setHandler(null);
+                localGHCB.AttachToMqTT(false);
+            }
+        }
+
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        GHCBManage.setContext(this);
 
         if (GHCBManage.GHCBs.size() == 0) {
             GHCBManage.getDevicesFromCloud();
@@ -106,29 +120,9 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
 
     }
 
-    protected void onPause() {
-        super.onPause();
-
-        for (GHCB localGHCB : GHCBManage.GHCBs.values()) {
-            if (localGHCB.getStatus() == GHCB.GHCBStatus.online) {
-                localGHCB.setHandler(null);
-//                localGHCB.AttachToMqTT(false);
-            }
-        }
-
-    }
-
-    protected void onResume() {
-        super.onResume();
-//        GHCBManage.setCtx( DevicesActivity.this);
-        for (GHCB g : GHCBManage.GHCBs.values()) {
-//            Log.i("orinoco","devices handler:"+handler+","+localGHCB.toString());
-            if (g.getStatus() == GHCB.GHCBStatus.online) {
-                g.setHandler(this.handler);
-                g.AttachToMqTT(true);
-            }
-        }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     public void refreshRlyTempListView() {
@@ -139,6 +133,14 @@ public class DevicesActivity extends AppCompatActivity implements RefreshActivit
             }
         } else {
             myAdapter.notifyDataSetChanged();
+        }
+
+        for (GHCB g : GHCBManage.GHCBs.values()) {
+            if (g.getStatus() == GHCB.GHCBStatus.online) {
+                g.setHandler(this.handler);
+                g.AttachToMqTT(true);
+
+            }
         }
     }
 
